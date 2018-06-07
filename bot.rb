@@ -2,7 +2,7 @@ require 'discordrb'
 
 MY_ID = 268723800030445569
 
-bot = Discordrb::Bot.new token: 'NDQyNTM4MzAwODg0OTEwMDgw.DdAR0A.DJey9GVpMtQiTQcXwh1DzShvqXk'
+bot = Discordrb::Bot.new token: ENV['BOT_TOKEN']
 
 bot.message(content: ['<:GWchadMEGATHINK:366999806343774218>', '<:Think:357607104418283522>', '<:think:443803808259244032>'] ) do |event|
   unless event.user.id == MY_ID
