@@ -1,14 +1,12 @@
 require 'discordrb'
 
-MY_ID = 268723800030445569
-
 bot = Discordrb::Bot.new token: ENV['BOT_TOKEN']
 
-bot.message(content: ['<:GWchadMEGATHINK:366999806343774218>', '<:Think:357607104418283522>', '<:think:443803808259244032>'] ) do |event|
-  unless event.user.id == MY_ID
-    event.message.delete
-  end
-end
+#bot.message(content: ['<:GWchadMEGATHINK:366999806343774218>', '<:Think:357607104418283522>', '<:think:443803808259244032>'] ) do |event|
+#  unless event.user.id == MY_ID
+#    event.message.delete
+#  end
+#end
 
 bot.message(start_with: /bot rate /i) do |event|
   m = event.message.content
@@ -31,6 +29,10 @@ end
 
 bot.message(content: /bad( )?bot|\<\:GWchadMEGATHINK\:366999806343774218\>|\<\:Think\:357607104418283522\>|\<\:think\:443803808259244032\>/i) do |event|
   event.message.react("miyanofu:443849528102223873")
+end
+
+bot.message(content: /.*(´･ω･`).*/i) do |event|
+  event.respond "DENKO RUN"
 end
 
 bot.run
