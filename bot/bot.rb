@@ -34,8 +34,7 @@ end
 bot.message(content: /.*(´･ω･`).*/i) do |event|
   event.respond [
     "DENKO RUN",
-    "SAVE YOURSELF,
-    DENKO",
+    "SAVE YOURSELF, DENKO",
     "DENKO HIDE QUICKLY"
   ].sample if Random.rand > 0.2
 end
