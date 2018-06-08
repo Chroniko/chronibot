@@ -39,7 +39,7 @@ end
 
 bot.message(content: /image .*/i) do |event|
   m = event.message.content
-  key = m[9..m.length].downcase
+  key = m[6..m.length].downcase
 
   results = GoogleCustomSearchApi.search(key, searchType: "image")
   event.respond results["items"].sample["link"]
