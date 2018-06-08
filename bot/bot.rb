@@ -32,7 +32,7 @@ bot.message(content: /ba+d *bo+t|\<\:GWchadMEGATHINK\:366999806343774218\>|\<\:T
 end
 
 bot.message(content: /.*(´･ω･`).*/i) do |event|
-  event.respond "DENKO RUN"
+  event.respond ["DENKO RUN", "SAVE YOURSELF, DENKO", "DENKO HIDE QUICKLY"].sample
 end
 
 bot.run
