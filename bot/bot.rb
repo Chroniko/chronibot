@@ -8,7 +8,7 @@ bot = Discordrb::Bot.new token: ENV['BOT_TOKEN']
 #  end
 #end
 
-bot.message(start_with: /bot rate /i) do |event|
+bot.message(content: /bot rate .+/i) do |event|
   m = event.message.content
   key = m[9..m.length].downcase
 
@@ -23,11 +23,11 @@ bot.message(start_with: /bot rate /i) do |event|
   event.respond "#{rating}/10"
 end
 
-bot.message(content: /good bot/i) do |event|
+bot.message(content: /go+d *bo+t/i) do |event|
   event.message.react("oowwoaaa:435243426913714177")
 end
 
-bot.message(content: /bad( )?bot|\<\:GWchadMEGATHINK\:366999806343774218\>|\<\:Think\:357607104418283522\>|\<\:think\:443803808259244032\>/i) do |event|
+bot.message(content: /ba+d *bo+t|\<\:GWchadMEGATHINK\:366999806343774218\>|\<\:Think\:357607104418283522\>|\<\:think\:443803808259244032\>/i) do |event|
   event.message.react("miyanofu:443849528102223873")
 end
 
