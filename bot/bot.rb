@@ -62,9 +62,9 @@ bot.message(content: /chrquestion .*/i) do |event|
 
   answer = Digest::MD5.hexdigest(key).to_i(16) % 2
   if answer == 1
-    event.respond "Yes, indeed."
+    event.respond ["Yes, indeed.", "Yeah", "Sure", "Why not", "Totally."].sample
   else
-    event.respond "Definitely no."
+    event.respond ["Definitely not.", "Nope", "No", "Don't think so."].sample
   end
 end
 
