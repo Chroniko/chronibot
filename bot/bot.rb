@@ -1,10 +1,10 @@
 require 'discordrb'
 require 'google_custom_search_api'
 
-GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY")
-GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX")
 
 bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
+
+google_api = true
 
 bot.message(content: /bot rate .+/i) do |event|
   m = event.message.content
@@ -38,6 +38,14 @@ bot.message(content: /.*(´･ω･`).*/i) do |event|
 end
 
 bot.message(content: /image .*/i) do |event|
+  if google_api
+    GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY")
+    GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX")
+  else
+    GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY_2")
+    GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX_2")
+  end
+  google_api = !google_api
   m = event.message.content
   key = m[6..m.length].downcase
 
