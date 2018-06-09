@@ -1,6 +1,6 @@
 require 'discordrb'
 require 'google_custom_search_api'
-
+require 'yaml'
 
 bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
 
@@ -71,6 +71,54 @@ end
 bot.message(content: /chrdecide .*\/.*(\/.*)*/i) do |event|
   m = event.message.content
   event.respond m[10..m.length].split("/").sample
+end
+
+bot.message(content: /chrbooru .*/i) do |event|
+  m = event.message.content
+  tags = m[9..m.length]
+  response = HTTParty.get("https://danbooru.donmai.us/posts.json?tags=#{tags} rating:safe")
+  event.respond YAML.load(response.body).sample["file_url"]
+end
+
+bot.message(content: /chrporn .*/i) do |event|
+  m = event.message.content
+  tags = m[8..m.length]
+  response = HTTParty.get("https://danbooru.donmai.us/posts.json?tags=#{tags} -rating:safe")
+  event.respond YAML.load(response.body).sample["file_url"]
+end
+
+bot.message(content: /chrbooru .*/i) do |event|
+  m = event.message.content
+  tag = m[9..m.length].downcase.gsub(/[ +]/, "_")
+  if ["loli", "lolicon", "toddlercon", "shota"].include?(tag)
+    tag = ["chroniko", "francesca_lucchini"].sample
+  end
+  response = HTTParty.get("https://danbooru.donmai.us/posts.json?tags=#{tag} rating:safe")
+  body = YAML.load(response.body)
+  if body == []
+    event.respond "No image found"
+  elsif body.kind_of?(Hash) && body["success"] == false
+    event.respond "No image found"
+  else
+    event.respond body.sample["file_url"]
+  end
+end
+
+bot.message(content: /chrporn .*/i) do |event|
+  m = event.message.content
+  tag = m[8..m.length].downcase.gsub(/[ +]/, "_")
+  if ["loli", "lolicon", "toddlercon", "shota"].include?(tag)
+    tag = ["chroniko", "francesca_lucchini"].sample
+  end
+  response = HTTParty.get("https://danbooru.donmai.us/posts.json?tags=#{tag} -rating:safe")
+  body = YAML.load(response.body)
+  if body == []
+    event.respond "No image found"
+  elsif body.kind_of?(Hash) && body["success"] == false
+    event.respond "No image found"
+  else
+    event.respond body.sample["file_url"]
+  end
 end
 
 bot.run

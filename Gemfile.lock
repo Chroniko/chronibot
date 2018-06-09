@@ -50,6 +50,7 @@ PLATFORMS
 DEPENDENCIES
   discordrb
   google_custom_search_api
+  httparty
 
 BUNDLED WITH
    1.16.1
