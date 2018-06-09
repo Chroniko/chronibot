@@ -53,4 +53,20 @@ bot.message(content: /image .*/i) do |event|
   event.respond results["items"].sample["link"]
 end
 
+bot.message(content: /chrquestion .*/i) do |event|
+  m = event.message.content
+  key = m[13..m.length].downcase
+
+  seed = Time.now.to_date.iso8601
+  key << seed
+
+  answer = Digest::MD5.hexdigest(key).to_i(16) % 2
+  if answer == 1
+    event.respond "Yes, indeed."
+  else
+    event.respond "Definitely no."
+  end
+end
+
+
 bot.run
