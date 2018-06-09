@@ -68,5 +68,9 @@ bot.message(content: /chrquestion .*/i) do |event|
   end
 end
 
+bot.message(content: /chrdecide .*\/.*(\/.*)*/i) do |event|
+  m = event.message.content
+  event.respond m[10..m.length].split("/").sample
+end
 
 bot.run
