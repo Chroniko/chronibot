@@ -53,6 +53,22 @@ bot.message(content: /image .*/i) do |event|
   event.respond results["items"].sample["link"]
 end
 
+bot.message(content: /animate .*/i) do |event|
+  if google_api
+    GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY")
+    GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX")
+  else
+    GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY_2")
+    GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX_2")
+  end
+  google_api = !google_api
+  m = event.message.content
+  key = m[8..m.length].downcase
+
+  results = GoogleCustomSearchApi.search(key, searchType: "image", fileType: "gif")
+  event.respond results["items"].sample["link"]
+end
+
 bot.message(content: /chrquestion .*/i) do |event|
   m = event.message.content
   key = m[13..m.length].downcase
