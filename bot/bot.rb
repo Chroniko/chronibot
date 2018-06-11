@@ -75,20 +75,6 @@ end
 
 bot.message(content: /chrbooru .*/i) do |event|
   m = event.message.content
-  tags = m[9..m.length]
-  response = HTTParty.get("https://danbooru.donmai.us/posts.json?tags=#{tags} rating:safe")
-  event.respond YAML.load(response.body).sample["file_url"]
-end
-
-bot.message(content: /chrporn .*/i) do |event|
-  m = event.message.content
-  tags = m[8..m.length]
-  response = HTTParty.get("https://danbooru.donmai.us/posts.json?tags=#{tags} -rating:safe")
-  event.respond YAML.load(response.body).sample["file_url"]
-end
-
-bot.message(content: /chrbooru .*/i) do |event|
-  m = event.message.content
   tag = m[9..m.length].downcase.gsub(/[ +]/, "_")
   if ["loli", "lolicon", "toddlercon", "shota"].include?(tag)
     tag = ["chroniko", "francesca_lucchini"].sample
