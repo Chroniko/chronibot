@@ -21,6 +21,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} help/i) do |event|
     embed.add_field(name: "Art - #{BOT_PREFIX} art <image tag>", value: "Post image from danbooru based on given (single) tag. Tag must match danbooru's format.", inline: false)
     embed.add_field(name: "Ero - #{BOT_PREFIX} ero <image tag>", value: "NSFW! Otherwise same as **Art**.", inline: false)
   end
+end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} name .+/i) do |event|
   if event.user.id == ENV.fetch('MY_ID')
