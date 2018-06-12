@@ -112,7 +112,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} question .+/i) do |event|
   end
 end
 
-bot.message(content: /#{Regexp.quote(BOT_PREFIX)} decide .+\/.+(\/.+)+/i) do |event|
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} decide .+(\/.+)+/i) do |event|
   m = event.message.content
   event.respond m[BOT_PREFIX.length+8..m.length].split("/").sample
 end
