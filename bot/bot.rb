@@ -7,6 +7,16 @@ google_api = true
 
 bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
 
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} name .+/i) do |event|
+  if event.user.id == ENV.fetch('MY_ID')
+    m = event.message.content
+    key = m[BOT_PREFIX.length+6..m.length].downcase
+
+    bot.profile.name = key
+  else
+    event.respond "<:miyanofu:443849528102223873>"
+  end
+end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} rate .+/i) do |event|
   m = event.message.content
