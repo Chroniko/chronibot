@@ -24,7 +24,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} help/i) do |event|
 end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} name .+/i) do |event|
-  if event.user.id == ENV.fetch('MY_ID')
+  if event.user.id.to_s == ENV.fetch('MY_ID')
     m = event.message.content
     key = m[BOT_PREFIX.length+6..m.length].downcase
 
