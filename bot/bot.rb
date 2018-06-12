@@ -17,7 +17,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} help/i) do |event|
     embed.add_field(name: "Image - #{BOT_PREFIX} image <input>", value: "Post a google images result. Requests limited to 200 per day.", inline: false)
     embed.add_field(name: "Animate - #{BOT_PREFIX} animate <input>", value: "Post an animated google images result. Shares **Image**'s request limit.", inline: false)
     embed.add_field(name: "Question - #{BOT_PREFIX} question <your question>", value: "Give a positive or negative answer.", inline: false)
-    embed.add_field(name: "Decide - #{BOT_PREFIX} decide <a>/<b>", value: "Choose from one of the given inputs. Any number of choices can be received.", inline: false)
+    embed.add_field(name: "Decide/Choose - #{BOT_PREFIX} decide|choose <a>/<b>", value: "Choose from one of the given inputs. Any number of choices can be received.", inline: false)
     embed.add_field(name: "Art - #{BOT_PREFIX} art <image tag>", value: "Post image from danbooru based on given (single) tag. Tag must match danbooru's format.", inline: false)
     embed.add_field(name: "Ero - #{BOT_PREFIX} ero <image tag>", value: "NSFW! Otherwise same as **Art**.", inline: false)
   end
@@ -112,7 +112,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} question .+/i) do |event|
   end
 end
 
-bot.message(content: /#{Regexp.quote(BOT_PREFIX)} decide .+(\/.+)+/i) do |event|
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} (decide|choose) .+(\/.+)+/i) do |event|
   m = event.message.content
   event.respond m[BOT_PREFIX.length+8..m.length].split("/").sample
 end
