@@ -7,6 +7,21 @@ google_api = true
 
 bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
 
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} help/i) do |event|
+  event.respond "Thank you for using #{bot.profile.name} services. <:botblush:456053146737967115>"
+  event.channel.send_embed do |embed|
+    embed.title = "Bot commands:"
+    embed.add_field(name: "Help - #{BOT_PREFIX} help", value: "List bot commands", inline: false)
+    embed.add_field(name: "Name - #{BOT_PREFIX} name <new name>", value: "Give me a new name (owners only).", inline: false)
+    embed.add_field(name: "Rate - #{BOT_PREFIX} rate <ratee>", value: "Rate something 0-10.", inline: false)
+    embed.add_field(name: "Image - #{BOT_PREFIX} image <input>", value: "Post a google images result. Requests limited to 200 per day.", inline: false)
+    embed.add_field(name: "Animate - #{BOT_PREFIX} animate <input>", value: "Post an animated google images result. Shares **Image**'s request limit.", inline: false)
+    embed.add_field(name: "Question - #{BOT_PREFIX} question <your question>", value: "Give a positive or negative answer.", inline: false)
+    embed.add_field(name: "Decide - #{BOT_PREFIX} decide <a>/<b>", value: "Choose from one of the given inputs. Any number of choices can be received.", inline: false)
+    embed.add_field(name: "Art - #{BOT_PREFIX} art <image tag>", value: "Post image from danbooru based on given (single) tag. Tag must match danbooru's format.", inline: false)
+    embed.add_field(name: "Ero - #{BOT_PREFIX} ero <image tag>", value: "NSFW! Otherwise same as **Art**.", inline: false)
+  end
+
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} name .+/i) do |event|
   if event.user.id == ENV.fetch('MY_ID')
     m = event.message.content
