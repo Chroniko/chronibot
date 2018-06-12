@@ -2,13 +2,15 @@ require 'discordrb'
 require 'google_custom_search_api'
 require 'yaml'
 
-bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
-
+BOT_PREFIX = "rubi"
 google_api = true
 
-bot.message(content: /bot rate .+/i) do |event|
+bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
+
+
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} rate .+/i) do |event|
   m = event.message.content
-  key = m[9..m.length].downcase
+  key = m[BOT_PREFIX.length+6..m.length].downcase
 
   if key == "me"
     key = "<@!#{event.message.user.id}>"
@@ -21,11 +23,11 @@ bot.message(content: /bot rate .+/i) do |event|
   event.respond "#{rating}/10"
 end
 
-bot.message(content: /go+d *bo+t/i) do |event|
+bot.message(content: /.*go+d *bo+t.*/i) do |event|
   event.message.react("oowwoaaa:435243426913714177")
 end
 
-bot.message(content: /ba+d *bo+t|\<\:GWchadMEGATHINK\:366999806343774218\>|\<\:Think\:357607104418283522\>|\<\:think\:443803808259244032\>/i) do |event|
+bot.message(content: /.*ba+d *bo+t.*|.*\<\:GWchadMEGATHINK\:366999806343774218\>.*|.*\<\:Think\:357607104418283522\>.*|.*\<\:think\:443803808259244032\>.*/i) do |event|
   event.message.react("miyanofu:443849528102223873")
 end
 
@@ -37,7 +39,7 @@ bot.message(content: /.*(´･ω･`).*/i) do |event|
   ].sample if Random.rand > 0.2
 end
 
-bot.message(content: /image .*/i) do |event|
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} image .+/i) do |event|
   if google_api
     GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY")
     GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX")
@@ -47,13 +49,13 @@ bot.message(content: /image .*/i) do |event|
   end
   google_api = !google_api
   m = event.message.content
-  key = m[6..m.length].downcase
+  key = m[BOT_PREFIX.length+7..m.length].downcase
 
   results = GoogleCustomSearchApi.search(key, searchType: "image")
   event.respond results["items"].sample["link"]
 end
 
-bot.message(content: /animate .*/i) do |event|
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} animate .+/i) do |event|
   if google_api
     GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY")
     GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX")
@@ -63,15 +65,15 @@ bot.message(content: /animate .*/i) do |event|
   end
   google_api = !google_api
   m = event.message.content
-  key = m[8..m.length].downcase
+  key = m[BOT_PREFIX.length+9..m.length].downcase
 
   results = GoogleCustomSearchApi.search(key, searchType: "image", fileType: "gif")
   event.respond results["items"].sample["link"]
 end
 
-bot.message(content: /chrquestion .*/i) do |event|
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} question .+/i) do |event|
   m = event.message.content
-  key = m[13..m.length].downcase
+  key = m[BOT_PREFIX.length+10..m.length].downcase
 
   seed = Time.now.to_date.iso8601
   key << seed
@@ -84,14 +86,14 @@ bot.message(content: /chrquestion .*/i) do |event|
   end
 end
 
-bot.message(content: /chrdecide .*\/.*(\/.*)*/i) do |event|
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} decide .+\/.+(\/.+)+/i) do |event|
   m = event.message.content
-  event.respond m[10..m.length].split("/").sample
+  event.respond m[BOT_PREFIX.length+8..m.length].split("/").sample
 end
 
-bot.message(content: /chrbooru .*/i) do |event|
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} art .+/i) do |event|
   m = event.message.content
-  tag = m[9..m.length].downcase.gsub(/[ +]/, "_")
+  tag = m[BOT_PREFIX.length+5..m.length].downcase.gsub(/[ +]/, "_")
   if ["loli", "lolicon", "toddlercon", "shota"].include?(tag)
     tag = ["chroniko", "francesca_lucchini"].sample
   end
@@ -106,9 +108,9 @@ bot.message(content: /chrbooru .*/i) do |event|
   end
 end
 
-bot.message(content: /chrporn .*/i) do |event|
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} ero .+/i) do |event|
   m = event.message.content
-  tag = m[8..m.length].downcase.gsub(/[ +]/, "_")
+  tag = m[BOT_PREFIX.length+5..m.length].downcase.gsub(/[ +]/, "_")
   if ["loli", "lolicon", "toddlercon", "shota"].include?(tag)
     tag = ["chroniko", "francesca_lucchini"].sample
   end
