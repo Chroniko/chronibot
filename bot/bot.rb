@@ -135,6 +135,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} art .+/i) do |event|
 end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} ero .+/i) do |event|
+  next if event.server.id.to_s == ENV.fetch('TEMP')
   m = event.message.content
   tag = m[BOT_PREFIX.length+5..m.length].gsub(/[ +]/, "_")
   if ["loli", "lolicon", "toddlercon", "shota"].include?(tag)
