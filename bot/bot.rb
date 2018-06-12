@@ -26,7 +26,7 @@ end
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} name .+/i) do |event|
   if event.user.id.to_s == ENV.fetch('MY_ID')
     m = event.message.content
-    key = m[BOT_PREFIX.length+6..m.length].downcase
+    key = m[BOT_PREFIX.length+6..m.length]
 
     bot.profile.name = key
   else
@@ -119,7 +119,7 @@ end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} art .+/i) do |event|
   m = event.message.content
-  tag = m[BOT_PREFIX.length+5..m.length].downcase.gsub(/[ +]/, "_")
+  tag = m[BOT_PREFIX.length+5..m.length].gsub(/[ +]/, "_")
   if ["loli", "lolicon", "toddlercon", "shota"].include?(tag)
     tag = ["chroniko", "francesca_lucchini"].sample
   end
@@ -136,7 +136,7 @@ end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} ero .+/i) do |event|
   m = event.message.content
-  tag = m[BOT_PREFIX.length+5..m.length].downcase.gsub(/[ +]/, "_")
+  tag = m[BOT_PREFIX.length+5..m.length].gsub(/[ +]/, "_")
   if ["loli", "lolicon", "toddlercon", "shota"].include?(tag)
     tag = ["chroniko", "francesca_lucchini"].sample
   end
