@@ -207,7 +207,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} anime .+/i) do |event|
         GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX_2")
       end
       google_api = !google_api
-      results = GoogleCustomSearchApi.search(key, searchType: "image")
+      results = GoogleCustomSearchApi.search(main_title, searchType: "image")
 
       event.channel.send_embed do |embed|
         embed.title = main_title
