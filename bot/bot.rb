@@ -26,6 +26,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} help/i) do |event|
     embed.add_field(name: "Decide/Choose - #{BOT_PREFIX} decide|choose <a>/<b>", value: "Choose from one of the given inputs. Any number of choices can be received.", inline: false)
     embed.add_field(name: "Art - #{BOT_PREFIX} art <image tag>", value: "Post image from danbooru based on given (single) tag. Tag must match danbooru's format.", inline: false)
     embed.add_field(name: "Ero - #{BOT_PREFIX} ero <image tag>", value: "NSFW! Otherwise same as **Art**.", inline: false)
+    embed.add_field(name: "Youtube - #{BOT_PREFIX} yt|youtube <input>", value: "Post a Youtube video result. Requests limited to 100 per day.")
     embed.add_field(name: "Anime - #{BOT_PREFIX} anime <title>", value: "Return AniDB entry for matching title. AniDB requests limited to one per 5s.", inline: false)
   end
 end
@@ -157,6 +158,19 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} ero .+/i) do |event|
   else
     event.respond body.sample["file_url"]
   end
+end
+
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} (yt|youtube) .+/i) do |event|
+  GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY_3")
+  GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX_3")
+  m = event.message.content
+  if m[BOT_PREFIX.length+2] == 't'
+    key = m[BOT_PREFIX.length+4..m.length]
+  else
+    key = m[BOT_PREFIX.length+9..m.length]
+  end
+  results = GoogleCustomSearchApi.search(key)
+  event.respond results["items"].sample["link"]
 end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} anime .+/i) do |event|
