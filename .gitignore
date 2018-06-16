@@ -1,1 +1,5 @@
-.env
+/.env
+/a.xml
+/anime.xml
+/lite_db.store
+/search.xml
