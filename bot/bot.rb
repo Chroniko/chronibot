@@ -1,11 +1,17 @@
 require 'discordrb'
 require 'google_custom_search_api'
 require 'yaml'
+require 'yaml/store'
 
 BOT_PREFIX = "rubi"
 google_api = true
 
 bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
+
+lite_db = YAML::Store.new "lite_db.store"
+lite_db.transaction do
+  lite_db["anidb"] = { "last_query_at" => Time.now }
+end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} help/i) do |event|
   event.respond "Thank you for using #{bot.profile.name} services. <:botblush:456053146737967115>"
@@ -20,6 +26,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} help/i) do |event|
     embed.add_field(name: "Decide/Choose - #{BOT_PREFIX} decide|choose <a>/<b>", value: "Choose from one of the given inputs. Any number of choices can be received.", inline: false)
     embed.add_field(name: "Art - #{BOT_PREFIX} art <image tag>", value: "Post image from danbooru based on given (single) tag. Tag must match danbooru's format.", inline: false)
     embed.add_field(name: "Ero - #{BOT_PREFIX} ero <image tag>", value: "NSFW! Otherwise same as **Art**.", inline: false)
+    embed.add_field(name: "Anime - #{BOT_PREFIX} anime <title>", value: "Return AniDB entry for matching title. AniDB requests limited to one per 5s.", inline: false)
   end
 end
 
@@ -149,6 +156,41 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} ero .+/i) do |event|
     event.respond "No image found"
   else
     event.respond body.sample["file_url"]
+  end
+end
+
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} anime .+/i) do |event|
+  yml = YAML.load_file('lite_db.store')
+  if yml["anidb"]["last_query_at"] > Time.now - 5
+    event.respond "Please do not spam AniDB requests."
+  else
+    m = event.message.content
+    tag = m[BOT_PREFIX.length+7..m.length]
+    anime_search = Nokogiri::XML(HTTParty.get("http://anisearch.outrance.pl/?task=search&query=\\#{key}").to_s)
+    anime_search = Nokogiri::XML(HTTParty.get("http://anisearch.outrance.pl/?task=search&query=#{key}").to_s) if anime_search.xpath("//animetitles//anime/@aid").first.nil?
+    puts anime_id = anime_search.xpath("//animetitles//anime/@aid").first
+    if anime_id.nil?
+      event.respond "No such anime found"
+    else
+      anidb_result = Nokogiri::XML(HTTParty.get("http://api.anidb.net:9001/httpapi?client=chronibot&clientver=1&protover=1&request=anime&aid=#{anime_id}").to_s)
+      lite_db.transaction do
+        lite_db["anidb"] = { "last_query_at" => Time.now }
+      end
+      anime = anidb_result.xpath("//anime")
+      main_title = anime.xpath("//titles/title").first.content
+      type = anime.xpath("//type").first.content
+      ep_count = anime.xpath("//episodecount").first.content
+      start_date = anime.xpath("//startdate").first.content
+      end_date = anime.xpath("//enddate").first.content
+      desc = anime.xpath("//description").first.content
+      event.channel.send_embed do |embed|
+        embed.title = main_title
+        embed.url = "http://anidb.net/a#{anime_id}"
+        embed.add_field(name: "Type", value: "#{type}, #{ep_count} ep", inline: false)
+        embed.add_field(name: "Year", value: "#{start_date} - #{end_date}", inline: false)
+        embed.add_field(name: "Description", value: desc, inline: false)
+      end
+    end
   end
 end
 

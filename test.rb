@@ -1,18 +1,32 @@
 require 'discordrb'
 require 'google_custom_search_api'
 require 'dotenv/load'
+require 'nokogiri'
+require 'yaml/store'
 
 GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY")
 GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX")
 
 bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
 
+lite_db = YAML::Store.new "lite_db.store"
+lite_db.transaction do
+  lite_db["anidb"] = { "last_query_at" => Time.now }
+  lite_db["last_poke"] = { "at" => Time.now }
+end
 
 
-
-
-
-
+bot.message(content: /mona/) do |event|
+  y = YAML.load_file('lite_db.store')
+  if y["last_poke"]["at"] > Time.now - 10
+    event.respond "Too soon Executus!"
+  else
+    event.respond "Time updated"
+    lite_db.transaction do
+      lite_db["last_poke"] = { "at" => Time.now }
+    end
+  end
+end
 
 #bot.message(content: ['<:GWchadMEGATHINK:366999806343774218>', '<:Think:357607104418283522>', '<:think:443803808259244032>'] ) do |event|
 #  unless event.user.id == MY_ID
