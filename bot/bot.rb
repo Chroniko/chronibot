@@ -198,12 +198,24 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} anime .+/i) do |event|
       start_date = anime.xpath("//startdate").first.content
       end_date = anime.xpath("//enddate").first.content
       desc = anime.xpath("//description").first.content
+
+      if google_api
+        GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY")
+        GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX")
+      else
+        GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY_2")
+        GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX_2")
+      end
+      google_api = !google_api
+      results = GoogleCustomSearchApi.search(key, searchType: "image")
+
       event.channel.send_embed do |embed|
         embed.title = main_title
         embed.url = "http://anidb.net/a#{anime_id}"
         embed.add_field(name: "Type", value: "#{type}, #{ep_count} ep", inline: false)
         embed.add_field(name: "Year", value: "#{start_date} - #{end_date}", inline: false)
         embed.add_field(name: "Description", value: desc, inline: false)
+        embed.image = { url: event.respond results["items"].first["link"] }
       end
     end
   end
