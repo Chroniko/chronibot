@@ -1,5 +1,6 @@
 require 'discordrb'
 require 'google_custom_search_api'
+require 'nokogiri'
 require 'yaml'
 require 'yaml/store'
 
