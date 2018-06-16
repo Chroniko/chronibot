@@ -179,7 +179,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} anime .+/i) do |event|
     event.respond "Please do not spam AniDB requests."
   else
     m = event.message.content
-    tag = m[BOT_PREFIX.length+7..m.length]
+    key = m[BOT_PREFIX.length+7..m.length]
     anime_search = Nokogiri::XML(HTTParty.get("http://anisearch.outrance.pl/?task=search&query=\\#{key}").to_s)
     anime_search = Nokogiri::XML(HTTParty.get("http://anisearch.outrance.pl/?task=search&query=#{key}").to_s) if anime_search.xpath("//animetitles//anime/@aid").first.nil?
     puts anime_id = anime_search.xpath("//animetitles//anime/@aid").first
