@@ -215,7 +215,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} anime .+/i) do |event|
         embed.add_field(name: "Type", value: "#{type}, #{ep_count} ep", inline: false)
         embed.add_field(name: "Year", value: "#{start_date} - #{end_date}", inline: false)
         embed.add_field(name: "Description", value: desc, inline: false)
-        embed.image = { url: event.respond results["items"].first["link"] }
+        embed.image = { url: results["items"].first["link"] }
       end
     end
   end
