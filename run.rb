@@ -1,1 +1,1 @@
-require_relative 'bot/bot'
+#require_relative 'bot/bot'
