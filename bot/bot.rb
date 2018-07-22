@@ -127,20 +127,12 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} (decide|choose) .+(\/.+)+/i) d
 end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} art .+/i) do |event|
-  m = event.message.content
-  tags = m[BOT_PREFIX.length+5..m.length].gsub(/, ?/, "+").gsub(/ /, "_")
-  response = HTTParty.get("https://capi-beta.sankakucomplex.com/post/index.json?tags=#{tags}+rating:safe&login=#{ENV.fetch("SANKAKU_USER")}&password_hash=#{ENV.fetch("SANKAKU_PASS")}")
-  
-  embed_sankaku_post(event, response)
+  get_sankaku_post(event, "+")
 end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} ero .+/i) do |event|
   next if event.server.id.to_s == ENV.fetch('CANELE_ID')
-  m = event.message.content
-  tags = m[BOT_PREFIX.length+5..m.length].gsub(/, ?/, "+").gsub(/ /, "_")
-  response = HTTParty.get("https://capi-beta.sankakucomplex.com/post/index.json?tags=#{tags}+-rating:safe&login=#{ENV.fetch("SANKAKU_USER")}&password_hash=#{ENV.fetch("SANKAKU_PASS")}")
-  
-  embed_sankaku_post(event, response)
+  get_sankaku_post(event, "+-")
 end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} (yt|youtube) .+/i) do |event|
@@ -211,8 +203,12 @@ def truncate_embed_field(string, max)
   string.length > max ? "#{string[0...max]}..." : string
 end
 
-def embed_sankaku_post(event, response)
-  if response.kind_of?(Array) && response.none?
+def get_sankaku_post(event, rating)
+  m = event.message.content
+  tags = m[BOT_PREFIX.length+5..m.length].gsub(/, ?/, "+").gsub(/ /, "_")
+  response = HTTParty.get("https://capi-beta.sankakucomplex.com/post/index.json?tags=#{tags}#{rating}rating:safe&login=#{ENV.fetch("SANKAKU_USER")}&password_hash=#{ENV.fetch("SANKAKU_PASS")}")
+
+  if response.none?
     event.respond "No image found"
     return
   elsif response.kind_of?(Hash) && response["success"] == false
