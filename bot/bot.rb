@@ -214,10 +214,10 @@ end
 def embed_sankaku_post(response)
   if response.none?
     event.respond "No image found"
-    next
+    return
   elsif response.kind_of?(Hash) && response["success"] == false
     event.respond("Search failed with following error: " << response["reason"])
-    next
+    return
   end
 
   post = response.sample
