@@ -25,8 +25,8 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} help/i) do |event|
     embed.add_field(name: "Animate - #{BOT_PREFIX} animate <input>", value: "Post an animated google images result. Shares **Image**'s request limit.", inline: false)
     embed.add_field(name: "Question - #{BOT_PREFIX} question <your question>", value: "Give a positive or negative answer.", inline: false)
     embed.add_field(name: "Decide/Choose - #{BOT_PREFIX} decide|choose <a>/<b>", value: "Choose from one of the given inputs. Any number of choices can be received.", inline: false)
-    embed.add_field(name: "Art - #{BOT_PREFIX} art <image tag>", value: "Post image from danbooru based on given (single) tag. Tag must match danbooru's format.", inline: false)
-    embed.add_field(name: "Ero - #{BOT_PREFIX} ero <image tag>", value: "NSFW! Otherwise same as **Art**.", inline: false)
+    embed.add_field(name: "Art - #{BOT_PREFIX} art <image tags>", value: "Post image from Sankaku based on given tags. Separate multiple tags with commas, max 8 tags. Tags must match Sankaku's format.", inline: false)
+    embed.add_field(name: "Ero - #{BOT_PREFIX} ero <image tags>", value: "NSFW! Otherwise same as **Art**.", inline: false)
     embed.add_field(name: "Youtube - #{BOT_PREFIX} yt|youtube <input>", value: "Post a Youtube video result. Requests limited to 100 per day.")
     embed.add_field(name: "Anime - #{BOT_PREFIX} anime <title>", value: "Return AniDB entry for matching title. AniDB requests limited to one per 5s.", inline: false)
   end
@@ -212,7 +212,7 @@ def truncate_embed_field(string, max)
 end
 
 def embed_sankaku_post(event, response)
-  if response.none?
+  if response.kind_of?(Array) && response.none?
     event.respond "No image found"
     return
   elsif response.kind_of?(Hash) && response["success"] == false
