@@ -131,7 +131,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} art .+/i) do |event|
   tags = m[BOT_PREFIX.length+5..m.length].gsub(/, ?/, "+").gsub(/ /, "_")
   response = HTTParty.get("https://capi-beta.sankakucomplex.com/post/index.json?tags=#{tags}+rating:safe&login=#{ENV.fetch("SANKAKU_USER")}&password_hash=#{ENV.fetch("SANKAKU_PASS")}")
   
-  embed_sankaku_post(response)
+  embed_sankaku_post(event, response)
 end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} ero .+/i) do |event|
@@ -140,7 +140,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} ero .+/i) do |event|
   tags = m[BOT_PREFIX.length+5..m.length].gsub(/, ?/, "+").gsub(/ /, "_")
   response = HTTParty.get("https://capi-beta.sankakucomplex.com/post/index.json?tags=#{tags}+-rating:safe&login=#{ENV.fetch("SANKAKU_USER")}&password_hash=#{ENV.fetch("SANKAKU_PASS")}")
   
-  embed_sankaku_post(response)
+  embed_sankaku_post(event, response)
 end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} (yt|youtube) .+/i) do |event|
@@ -211,7 +211,7 @@ def truncate_embed_field(string, max)
   string.length > max ? "#{string[0...max]}..." : string
 end
 
-def embed_sankaku_post(response)
+def embed_sankaku_post(event, response)
   if response.none?
     event.respond "No image found"
     return
