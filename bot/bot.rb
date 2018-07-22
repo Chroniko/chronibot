@@ -207,7 +207,7 @@ def get_sankaku_post(event, rating)
   m = event.message.content
   tags = m[BOT_PREFIX.length+5..m.length].gsub(/, ?/, "+").gsub(/ /, "_")
   response = HTTParty.get("https://capi-beta.sankakucomplex.com/post/index.json?tags=#{tags}#{rating}rating:safe&login=#{ENV.fetch("SANKAKU_USER")}&password_hash=#{ENV.fetch("SANKAKU_PASS")}")
-
+  sleep 10
   if response.none?
     event.respond "No image found"
     return
