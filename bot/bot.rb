@@ -3,11 +3,14 @@ require 'google_custom_search_api'
 require 'nokogiri'
 require 'yaml'
 require 'yaml/store'
+require 'markov-polo'
 
 BOT_PREFIX = "rubi"
 google_api = true
 
 bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
+chain = MarkovPolo::Chain.new
+chain << "bunnies are the best"
 
 lite_db = YAML::Store.new "lite_db.store"
 lite_db.transaction do
@@ -204,6 +207,15 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} anime .+/i) do |event|
       end
     end
   end
+end
+
+bot.message(content: /.+/) do |event|
+  m = event.message.content
+  chain << m unless m.downcase.start_with?(BOT_PREFIX, "!", "=", "&", "p!", ":", "<")
+end
+
+bot.message(content: /rubi markov/i) do |event|
+  event.respond chain.generate
 end
 
 bot.run
