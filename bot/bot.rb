@@ -212,6 +212,9 @@ end
 
 bot.message(content: /.+/) do |event|
   m = event.message.content
+  if event.channel.id == 439700683990630402
+    bot.send_message("478918445132546068", "#{event.author.display_name}: #{m}")
+  end
   chain << m unless m.downcase.start_with?(BOT_PREFIX, "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10
 end
 

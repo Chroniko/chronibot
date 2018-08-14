@@ -3,11 +3,17 @@ require 'google_custom_search_api'
 require 'dotenv/load'
 require 'nokogiri'
 require 'yaml/store'
+#require 'redis'
+require 'markov-polo'
 
 GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY")
 GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX")
+BOT_PREFIX = "rubi"
 
 bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
+#redis = Redis.new
+chain = MarkovPolo::Chain.new
+chain << "<:rooNya:470241461573779457>"
 
 lite_db = YAML::Store.new "lite_db.store"
 lite_db.transaction do
@@ -15,16 +21,19 @@ lite_db.transaction do
   lite_db["last_poke"] = { "at" => Time.now }
 end
 
+bot.message(content: /rubi test/i) do |event|
+  #Command::Help.new.output(event, bot, BOT_PREFIX)
+end
 
-bot.message(content: /mona/) do |event|
-  y = YAML.load_file('lite_db.store')
-  if y["last_poke"]["at"] > Time.now - 10
-    event.respond "Too soon Executus!"
-  else
-    event.respond "Time updated"
-    lite_db.transaction do
-      lite_db["last_poke"] = { "at" => Time.now }
-    end
+bot.message(content: /.+/) do |event|
+  next unless event.channel.id == 439700683990630402
+  m = event.message.content
+  #bot.send_message("478918445132546068", "#{event.author.display_name}: #{m} ##{event.channel.name}: #{event.channel.id}")
+end
+
+bot.playing do |event|
+  if event.user.id == 122196782473150464 && event.game == "Heroes of the Storm"
+    event.user.pm("Hey wanna smurf boost team league with Aya?")
   end
 end
 
@@ -56,31 +65,6 @@ end
 #bot.message(content: /changemybotname/i) do |event|
 #  bot.profile.name = "Chronibot"
 #  event.respond("It was me all along!")
-#end
-#
-#bot.message(content: /asd (?<key>.*)$/i) do |event, match|
-#  puts match["key"]
-#end
-#
-#bot.message(start_with: /a /i) do |event|
-#  #event.user.nick = "tester"
-#  m = event.message.content
-#  key = m[2..m.length].downcase
-#
-#  if key == "me"
-#    key = "<@!#{event.message.user.id}>"
-#  end
-#
-#  seed = Time.now.to_date.iso8601
-#  key << seed
-#
-#  puts Digest::MD5.hexdigest(key).to_i(16) % 11
-#end
-#
-#bot.message() do |event|
-#  if event.user.id == 298116576274808832
-#    event.message.delete 
-#  end
 #end
 
 #bot.message(content: /bot give tommy a space between his name and guild symbol because it really bothered pang and i said i could make the bot do it instead of just talking to him/) do |e|
