@@ -211,7 +211,7 @@ end
 
 bot.message(content: /.+/) do |event|
   m = event.message.content
-  chain << m unless m.downcase.start_with?(BOT_PREFIX, "!", "=", "&", "p!", ":", "<")
+  chain << m unless m.downcase.start_with?(BOT_PREFIX, "!", "=", "&", "p!", ":", "<") || /^[0-9]+$/.match?(m)
 end
 
 bot.message(content: /rubi markov/i) do |event|
