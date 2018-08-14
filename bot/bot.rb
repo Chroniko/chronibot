@@ -185,3 +185,5 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} anime .+/i) do |event|
     end
   end
 end
+
+bot.run
