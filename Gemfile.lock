@@ -22,6 +22,7 @@ GEM
       domain_name (~> 0.5)
     httparty (0.16.2)
       multi_xml (>= 0.5.2)
+    markov-polo (0.1.1)
     mime-types (3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
@@ -35,6 +36,7 @@ GEM
     public_suffix (3.0.2)
     rbnacl (3.4.0)
       ffi
+    redis (4.0.2)
     rest-client (2.0.2)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -54,7 +56,9 @@ DEPENDENCIES
   discordrb
   google_custom_search_api
   httparty
+  markov-polo
   nokogiri
+  redis
 
 BUNDLED WITH
    1.16.1
