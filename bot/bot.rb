@@ -33,6 +33,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} help/i) do |event|
     embed.add_field(name: "Ero - #{BOT_PREFIX} ero <image tags>", value: "NSFW! Otherwise same as **Art**.", inline: false)
     embed.add_field(name: "Youtube - #{BOT_PREFIX} yt|youtube <input>", value: "Post a Youtube video result. Requests limited to 100 per day.")
     embed.add_field(name: "Anime - #{BOT_PREFIX} anime <title>", value: "Return AniDB entry for matching title. AniDB requests limited to one per 5s.", inline: false)
+    embed.add_field(name: "Markov - #{BOT_PREFIX} markov", value: "Generate sentences via markov chain from messages seen in channels.", inline: false)
   end
 end
 
