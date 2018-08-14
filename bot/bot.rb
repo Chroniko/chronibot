@@ -23,6 +23,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} help/i) do |event|
     embed.add_field(name: "Rate - #{BOT_PREFIX} rate <ratee>", value: "Rate something 0-10.", inline: false)
     embed.add_field(name: "Image - #{BOT_PREFIX} image <input>", value: "Post a google images result. Requests limited to 200 per day.", inline: false)
     embed.add_field(name: "Animate - #{BOT_PREFIX} animate <input>", value: "Post an animated google images result. Shares **Image**'s request limit.", inline: false)
+    embed.add_field(name: "Reddit - #{BOT_PREFIX} reddit <subreddit> (#)", value: "Return a reddit post from the requested subreddit. Can suffix a 1-9 number for multiple results.", inline: false)
     embed.add_field(name: "Question - #{BOT_PREFIX} question <your question>", value: "Give a positive or negative answer.", inline: false)
     embed.add_field(name: "Decide/Choose - #{BOT_PREFIX} decide|choose <a>/<b>", value: "Choose from one of the given inputs. Any number of choices can be received.", inline: false)
     embed.add_field(name: "Art - #{BOT_PREFIX} art <image tags>", value: "Post image from Sankaku based on given tags. Separate multiple tags with commas, max 8 tags. Tags must match Sankaku's format.", inline: false)
@@ -104,6 +105,25 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} animate .+/i) do |event|
 
   results = GoogleCustomSearchApi.search(key, searchType: "image", fileType: "gif")
   event.respond results["items"].sample["link"]
+end
+
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} reddit .+/i) do |event|
+  m = event.message.content
+  if m =~ /.+ [1-9]/
+    count = m[m.length-1].to_i
+    subreddit = m[BOT_PREFIX.length+8..m.length-3]
+  else
+    count = 1
+    subreddit = m[BOT_PREFIX.length+8..m.length]
+  end
+  posts = HTTParty.get(
+    "https://www.reddit.com/r/#{subreddit}/new.json?sort=new&limit=100",
+    format: :json,
+    headers: { "User-agent" => "Chronibot" }
+  )["data"]["children"].map { |p| p["data"] }
+  posts.sample(count).each do |post|
+    event.respond "#{post['title']} - #{post['url']}"
+  end
 end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} question .+/i) do |event|
