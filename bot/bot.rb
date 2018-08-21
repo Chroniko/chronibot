@@ -50,15 +50,14 @@ end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} rate .+/i) do |event|
   m = event.message.content
-  key = m[BOT_PREFIX.length+6..m.length].downcase
-
-  if key == "me"
-    key = "<@!#{event.message.user.id}>"
+  key = m[BOT_PREFIX.length+6..m.length].downcase.sub('!', '')
+  user_name = event.author.name
+  user_nick = event.author.nick || user_name
+  if key == "me" || user_name.include?(key) || user_nick.include?(key)
+    key = "<@#{event.message.user.id}>"
   end
-
   seed = Time.now.to_date.iso8601
   key << seed
-
   rating = Digest::MD5.hexdigest(key).to_i(16) % 11
   event.respond "#{rating}/10"
 end
