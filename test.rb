@@ -21,8 +21,8 @@ lite_db.transaction do
   lite_db["last_poke"] = { "at" => Time.now }
 end
 
-bot.message(content: /rubi test/i) do |event|
-  #Command::Help.new.output(event, bot, BOT_PREFIX)
+bot.message(content: /rubi test.*/i) do |event|
+  m = event.message.content
 end
 
 bot.message(content: /.+/) do |event|
@@ -31,11 +31,11 @@ bot.message(content: /.+/) do |event|
   #bot.send_message("478918445132546068", "#{event.author.display_name}: #{m} ##{event.channel.name}: #{event.channel.id}")
 end
 
-bot.playing do |event|
-  if event.user.id == 122196782473150464 && event.game == "Heroes of the Storm"
-    event.user.pm("Hey wanna smurf boost team league with Aya?")
-  end
-end
+#bot.playing do |event|
+#  if event.user.id == 122196782473150464 && event.game == "Heroes of the Storm"
+#    event.user.pm("Hey wanna smurf boost team league with Aya?")
+#  end
+#end
 
 #bot.message(content: ['<:GWchadMEGATHINK:366999806343774218>', '<:Think:357607104418283522>', '<:think:443803808259244032>'] ) do |event|
 #  unless event.user.id == MY_ID

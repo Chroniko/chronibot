@@ -33,7 +33,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} help/i) do |event|
     embed.add_field(name: "Ero - #{BOT_PREFIX} ero <image tags>", value: "NSFW! Otherwise same as **Art**.", inline: false)
     embed.add_field(name: "Youtube - #{BOT_PREFIX} yt|youtube <input>", value: "Post a Youtube video result. Requests limited to 100 per day.")
     embed.add_field(name: "Anime - #{BOT_PREFIX} anime <title>", value: "Return AniDB entry for matching title. AniDB requests limited to one per 5s.", inline: false)
-    embed.add_field(name: "Markov - #{BOT_PREFIX} markov", value: "Generate sentences via markov chain from messages seen in channels.", inline: false)
+    embed.add_field(name: "Markov - #{BOT_PREFIX} markov (#)", value: "Generate sentences via markov chain from messages seen in channels. Can suffix a 1-9 number for multiple results.", inline: false)
   end
 end
 
@@ -215,10 +215,16 @@ bot.message(content: /.+/) do |event|
     bot.send_message("478918445132546068", "#{event.author.display_name}: #{m}")
   end
   chain << m unless m.downcase.start_with?(BOT_PREFIX, "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10
+  event.respond chain.generate if rand < 0.01
 end
 
-bot.message(content: /rubi markov/i) do |event|
-  event.respond chain.generate
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} markov.*/i) do |event|
+  m = event.message.content
+  i = 1
+  i = m[m.length-1].to_i if m[m.length-1] =~ /[1-9]/
+  i.times do
+    event.respond chain.generate
+  end
 end
 
 bot.run
