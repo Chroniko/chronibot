@@ -53,7 +53,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} rate .+/i) do |event|
   key = m[BOT_PREFIX.length+6..m.length].downcase.sub('!', '')
   user_name = event.author.name
   user_nick = event.author.nick || user_name
-  if key == "me" || user_name.include?(key) || user_nick.include?(key)
+  if key == "me" || user_name.downcase.include?(key) || user_nick.downcase.include?(key)
     key = "<@#{event.message.user.id}>"
   end
   seed = Time.now.to_date.iso8601
