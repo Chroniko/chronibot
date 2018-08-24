@@ -25,9 +25,23 @@ bot.message(content: /rubi test.*/i) do |event|
   m = event.message.content
 end
 
-bot.message(content: /.+/) do |event|
-  next unless event.channel.id == 439700683990630402
-  m = event.message.content
+bot.message(content: /rubi rate me/i) do |event|
+  event.respond "-1/10" if event.message.author.id == 112759154975760384
+end
+
+bot.message(content: /rubi (nicky )?nudes/i) do |event|
+  next unless [ENV.fetch("MY_ID").to_i, ENV.fetch("NICKY_ID").to_i].include?(event.message.author.id)
+  event.message.user.pm("Psssst, hey. My database feels a bit empty, so I could really use any pics you might send this way. Noone's gonna know. <:botwut:482531370254467072>")
+end
+
+bot.message(content: /.*/) do |event|
+  #next unless event.channel.id == 439700683990630402
+  #p event.message.attachments
+  #m = event.message.content
+  #p m
+  #p user_ids = event.channel.users.map {|u| [u.id, u.name, u.nick]}
+  #event.channel.users.each {|u| p u if u.id == ENV.fetch('MY_ID').to_i}
+  #p m
   #bot.send_message("478918445132546068", "#{event.author.display_name}: #{m} ##{event.channel.name}: #{event.channel.id}")
 end
 
