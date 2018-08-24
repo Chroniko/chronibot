@@ -81,6 +81,10 @@ bot.message(content: /.*(´･ω･`).*/i) do |event|
   ].sample if Random.rand > 0.2
 end
 
+bot.message(content: /.*@everyone.*/i) do |event|
+  event.message.react("a:pingdoge:446087751092404244")
+end
+
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} image .+/i) do |event|
   if google_api
     GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY")
