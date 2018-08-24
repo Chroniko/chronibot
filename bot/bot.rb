@@ -222,7 +222,7 @@ bot.message(content: /.+/) do |event|
     bot.send_message("478918445132546068", "#{event.author.display_name}: #{m}")
   end
   chain << m unless m.downcase.start_with?(BOT_PREFIX, "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10
-  event.respond chain.generate if rand < 0.01
+  event.respond chain.generate if rand < 0.005
 end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} markov.*/i) do |event|
