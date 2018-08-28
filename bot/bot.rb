@@ -236,7 +236,10 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} markov.*/i) do |event|
 end
 
 bot.pm do |event|
-  bot.user(ENV.fetch("MY_ID")).pm("PM from #{event.message.user.name}: #{event.message.content}") unless event.message.user.id == ENV.fetch("MY_ID").to_i
+  unless event.message.user.id == ENV.fetch("MY_ID").to_i
+    bot.user(ENV.fetch("MY_ID")).pm("PM from #{event.message.user.name}: #{event.message.content}")
+    bot.user(ENV.fetch("MY_ID")).pm(event.message.attachments.last.url) if event.message.attachments.any?
+  end
 end
 
 bot.run
