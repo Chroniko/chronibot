@@ -23,10 +23,7 @@ end
 
 bot.message(content: /rubi test.*/i) do |event|
   m = event.message.content
-end
-
-bot.message(content: /rubi rate me/i) do |event|
-  event.respond "-1/10" if event.message.author.id == 112759154975760384
+  bot.send_message(ENV.fetch("MY_ID").to_i, m)
 end
 
 bot.message(content: /rubi (nicky )?nudes/i) do |event|
@@ -34,7 +31,13 @@ bot.message(content: /rubi (nicky )?nudes/i) do |event|
   event.message.user.pm("Psssst, hey. My database feels a bit empty, so I could really use any pics you might send this way. Noone's gonna know. <:botwut:482531370254467072>")
 end
 
-bot.message(content: /.*/) do |event|
+bot.message(content: /aaaa.*/) do |event|
+  next unless ENV.fetch("MY_ID").to_i == event.message.author.id
+  event.server.users.each do |u|
+    next if u.id == 442538300884910080 # skip self otherwise crash
+    p u.name
+    u.pm.history(100).each {|m| p m.content }
+  end
   #next unless event.channel.id == 439700683990630402
   #p event.message.attachments
   #m = event.message.content
@@ -43,6 +46,27 @@ bot.message(content: /.*/) do |event|
   #event.channel.users.each {|u| p u if u.id == ENV.fetch('MY_ID').to_i}
   #p m
   #bot.send_message("478918445132546068", "#{event.author.display_name}: #{m} ##{event.channel.name}: #{event.channel.id}")
+end
+
+bot.message do |event|
+
+end
+
+bot.pm do |event|
+  bot.user(ENV.fetch("MY_ID")).pm("PM from #{event.message.user.name}: #{event.message.content}") unless event.message.user.id == ENV.fetch("MY_ID").to_i
+end
+
+bot.ready do |event|
+  c = bot.channel("439700683990630402")
+  c.history(100).each do |m|
+#    p m.content if m.user.id == 442538300884910080
+    bot.send_message("478918445132546068", m.attachments.last.url) if m.attachments.any?
+  end
+  #p bot.users#.each do |u|
+  #  next if u.id == 442538300884910080
+  #  p u.name
+  #  u.pm.history(100).each {|m| p m.content }
+  #end
 end
 
 #bot.playing do |event|

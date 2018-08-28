@@ -216,10 +216,11 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} anime .+/i) do |event|
   end
 end
 
-bot.message(content: /.+/) do |event|
+bot.message do |event|
   m = event.message.content
   if event.channel.id == 439700683990630402
     bot.send_message("478918445132546068", "#{event.author.display_name}: #{m}")
+    bot.send_message("478918445132546068", event.message.attachments.last.url) if event.message.attachments.any?
   end
   chain << m unless m.downcase.start_with?(BOT_PREFIX, "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10
   event.respond chain.generate if rand < 0.005
@@ -232,6 +233,10 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} markov.*/i) do |event|
   i.times do
     event.respond chain.generate
   end
+end
+
+bot.pm do |event|
+  bot.user(ENV.fetch("MY_ID")).pm("PM from #{event.message.user.name}: #{event.message.content}") unless event.message.user.id == ENV.fetch("MY_ID").to_i
 end
 
 bot.run
