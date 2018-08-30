@@ -222,8 +222,14 @@ bot.message do |event|
     bot.send_message("478918445132546068", "#{event.author.display_name}: #{m}")
     bot.send_message("478918445132546068", event.message.attachments.last.url) if event.message.attachments.any?
   end
-  chain << m unless m.downcase.start_with?(BOT_PREFIX, "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10
+  chain << m unless m.downcase.start_with?("#{BOT_PREFIX} ", "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10
   event.respond chain.generate if rand < 0.005
+
+  # channel tracker
+  ignore_servers = [448750750437474306,470061749350039552,351157784923996170,434769061575000087]
+  next if event.server.nil?
+  next if ignore_servers.include?(event.server.id)
+  bot.send_message("484262673777950721", "#{event.server.name}/##{event.channel.name} - #{event.channel.id}")
 end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} markov.*/i) do |event|

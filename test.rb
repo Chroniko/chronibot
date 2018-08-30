@@ -49,18 +49,13 @@ bot.message(content: /aaaa.*/) do |event|
 end
 
 bot.message do |event|
-
-end
-
-bot.pm do |event|
-  bot.user(ENV.fetch("MY_ID")).pm("PM from #{event.message.user.name}: #{event.message.content}") unless event.message.user.id == ENV.fetch("MY_ID").to_i
 end
 
 bot.ready do |event|
   c = bot.channel("439700683990630402")
-  c.history(100).each do |m|
-#    p m.content if m.user.id == 442538300884910080
-    bot.send_message("478918445132546068", m.attachments.last.url) if m.attachments.any?
+  c.history(100).reverse_each do |m|
+    p m.content if m.user.id == 442538300884910080
+#    bot.send_message("478918445132546068", m.attachments.last.url) if m.attachments.any?
   end
   #p bot.users#.each do |u|
   #  next if u.id == 442538300884910080
