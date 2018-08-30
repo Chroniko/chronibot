@@ -7,6 +7,7 @@ require 'markov-polo'
 
 BOT_PREFIX = "rubi"
 google_api = true
+last_tracked_channel = 0
 
 bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
 chain = MarkovPolo::Chain.new
@@ -229,7 +230,8 @@ bot.message do |event|
   ignore_servers = [448750750437474306,470061749350039552,351157784923996170,434769061575000087]
   next if event.server.nil?
   next if ignore_servers.include?(event.server.id)
-  bot.send_message("484262673777950721", "#{event.server.name}/##{event.channel.name} - #{event.channel.id}")
+  bot.send_message("484262673777950721", "#{event.server.name}/##{event.channel.name} - #{event.channel.id}") unless event.channel.id == last_tracked_channel
+  last_tracked_channel = event.channel.id
 end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} markov.*/i) do |event|
