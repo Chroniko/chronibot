@@ -13,7 +13,9 @@ BOT_PREFIX = "rubi"
 bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
 #redis = Redis.new
 chain = MarkovPolo::Chain.new
-chain << "<:rooNya:470241461573779457>"
+c = bot.channel("476425672235941912").history(100).reverse_each do |m|
+  chain << m.content
+end
 
 lite_db = YAML::Store.new "lite_db.store"
 lite_db.transaction do
@@ -57,6 +59,8 @@ bot.ready do |event|
     p m.content if m.user.id == 442538300884910080
 #    bot.send_message("478918445132546068", m.attachments.last.url) if m.attachments.any?
   end
+
+  p "chain"
   #p bot.users#.each do |u|
   #  next if u.id == 442538300884910080
   #  p u.name

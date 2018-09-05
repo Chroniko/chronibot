@@ -224,7 +224,11 @@ bot.message do |event|
     bot.send_message("478918445132546068", event.message.attachments.last.url) if event.message.attachments.any?
   end
   chain << m unless m.downcase.start_with?("#{BOT_PREFIX} ", "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10
-  event.respond chain.generate if rand < 0.005
+  if rand < 0.005
+    markov_response = chain.generate
+    event.respond markov_response
+    bot.send_message("478918445132546068", markov_response) if event.channel.id == 439700683990630402
+  end
 
   # channel tracker
   ignore_servers = [448750750437474306,470061749350039552,351157784923996170,434769061575000087]
