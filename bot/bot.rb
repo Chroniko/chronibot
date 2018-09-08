@@ -219,9 +219,20 @@ end
 
 bot.message do |event|
   m = event.message.content
+
+  # logging
   if event.channel.id == 439700683990630402
     bot.send_message("478918445132546068", "#{event.author.display_name}: #{m}")
     bot.send_message("478918445132546068", event.message.attachments.last.url) if event.message.attachments.any?
+  elsif event.channel.id == 388334487894884364
+    bot.send_message("487946041937625104", "#{event.author.display_name}: #{m}")
+    bot.send_message("487946041937625104", event.message.attachments.last.url) if event.message.attachments.any?
+  elsif event.channel.id == 388417506513256463
+    bot.send_message("487946082999861248", "#{event.author.display_name}: #{m}")
+    bot.send_message("487946082999861248", event.message.attachments.last.url) if event.message.attachments.any?
+  elsif event.channel.id == 388410901000355841
+    bot.send_message("487946133793013771", "#{event.author.display_name}: #{m}")
+    bot.send_message("487946133793013771", event.message.attachments.last.url) if event.message.attachments.any?
   end
   chain << m unless m.downcase.start_with?("#{BOT_PREFIX} ", "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10 || event.server.id == ENV.fetch("REZIDENCA_ID").to_i
   if rand < 0.005
