@@ -222,43 +222,43 @@ bot.message do |event|
 
   # logging
   if event.channel.id == 439700683990630402
-    bot.send_message("478918445132546068", "#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("478918445132546068", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
     bot.send_message("478918445132546068", event.message.attachments.last.url) if event.message.attachments.any?
   elsif event.channel.id == 388334487894884364
-    bot.send_message("487946041937625104", "#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("487946041937625104", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
     bot.send_message("487946041937625104", event.message.attachments.last.url) if event.message.attachments.any?
   elsif event.channel.id == 388417506513256463
-    bot.send_message("487946082999861248", "#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("487946082999861248", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
     bot.send_message("487946082999861248", event.message.attachments.last.url) if event.message.attachments.any?
   elsif event.channel.id == 388410901000355841
-    bot.send_message("487946133793013771", "#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("487946133793013771", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
     bot.send_message("487946133793013771", event.message.attachments.last.url) if event.message.attachments.any?
   elsif event.channel.id == 470313907387498506
-    bot.send_message("488247507982221323", "#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("488247507982221323", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
     bot.send_message("488247507982221323", event.message.attachments.last.url) if event.message.attachments.any?
   elsif event.channel.id == 388419594437787659
-    bot.send_message("488249218188967947", "#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("488249218188967947", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
     bot.send_message("488249218188967947", event.message.attachments.last.url) if event.message.attachments.any?
   elsif event.channel.id == 388419621390385153
-    bot.send_message("488250079317327873", "#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("488250079317327873", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
     bot.send_message("488250079317327873", event.message.attachments.last.url) if event.message.attachments.any?
   elsif event.channel.id == 388417570044117003
-    bot.send_message("488274686480875522", "#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("488274686480875522", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
     bot.send_message("488274686480875522", event.message.attachments.last.url) if event.message.attachments.any?
   elsif event.channel.id == 389985087665602560
-    bot.send_message("488277875234045952", "#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("488277875234045952", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
     bot.send_message("488277875234045952", event.message.attachments.last.url) if event.message.attachments.any?
   elsif event.channel.id == 405490106573783041
-    bot.send_message("488279957420769282", "#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("488279957420769282", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
     bot.send_message("488279957420769282", event.message.attachments.last.url) if event.message.attachments.any?
   elsif event.channel.id == 405831095029071872
-    bot.send_message("488280775096008704", "#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("488280775096008704", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
     bot.send_message("488280775096008704", event.message.attachments.last.url) if event.message.attachments.any?
   elsif event.channel.id == 433765499407564820
-    bot.send_message("488284688339828736", "#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("488284688339828736", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
     bot.send_message("488284688339828736", event.message.attachments.last.url) if event.message.attachments.any?
   elsif event.channel.id == 470261896432451585
-    bot.send_message("488290626572648469", "#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("488290626572648469", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
     bot.send_message("488290626572648469", event.message.attachments.last.url) if event.message.attachments.any?
   end
 
