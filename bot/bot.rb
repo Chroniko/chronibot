@@ -282,9 +282,11 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} markov.*/i) do |event|
   i = 1
   i = m[-1].to_i if m[-1] =~ /[1-9]/
   key = m.split[2]
-  key = "__start__" if key.nil? || key =~ /^[0-9]+$/
   i.times do
-    event.respond chain.generate(key)
+    if key.nil? || key =~ /^[0-9]+$/
+      event.respond chain.generate
+    else
+      event.respond chain.generate(key)
   end
 end
 
