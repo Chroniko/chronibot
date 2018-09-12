@@ -50,7 +50,7 @@ module MarkovPolo
       total.join " "
     end
 
-    def generate(start)
+    def generate_from(start)
       return start unless @data.has_key?(start)
       last = start
       total = [start]
