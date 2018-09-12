@@ -4,7 +4,7 @@ require 'dotenv/load'
 require 'nokogiri'
 require 'yaml/store'
 #require 'redis'
-require 'markov-polo'
+require './lib/markov-polo'
 
 GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY")
 GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX")
@@ -13,7 +13,7 @@ BOT_PREFIX = "rubi"
 bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
 #redis = Redis.new
 chain = MarkovPolo::Chain.new
-c = bot.channel("476425672235941912").history(100).reverse_each do |m|
+bot.channel("439031597107249154").history(100).reverse_each do |m|
   chain << m.content
 end
 
@@ -21,16 +21,6 @@ lite_db = YAML::Store.new "lite_db.store"
 lite_db.transaction do
   lite_db["anidb"] = { "last_query_at" => Time.now }
   lite_db["last_poke"] = { "at" => Time.now }
-end
-
-bot.message(content: /rubi test.*/i) do |event|
-  m = event.message.content
-  bot.send_message(ENV.fetch("MY_ID").to_i, m)
-end
-
-bot.message(content: /rubi (nicky )?nudes/i) do |event|
-  next unless [ENV.fetch("MY_ID").to_i, ENV.fetch("NICKY_ID").to_i].include?(event.message.author.id)
-  event.message.user.pm("Psssst, hey. My database feels a bit empty, so I could really use any pics you might send this way. Noone's gonna know. <:botwut:482531370254467072>")
 end
 
 bot.message(content: /aaaa.*/) do |event|
@@ -54,13 +44,17 @@ bot.message do |event|
 end
 
 bot.ready do |event|
-  c = bot.channel("439700683990630402")
-  c.history(100).reverse_each do |m|
-    p m.content if m.user.id == 442538300884910080
-#    bot.send_message("478918445132546068", m.attachments.last.url) if m.attachments.any?
-  end
+  #v = bot.channel("388334487894884364")
+  #v.server.channels.each {|c| p "#{c.name} - #{c.id}"}
+  #v.history(100).reverse_each do |m|
+    #p "[#{m.timestamp.strftime("%H:%M")}] #{m.author.name}: #{m.content}" if m.user.id == 442538300884910080
+    #bot.send_message("488290626572648469", "[#{m.timestamp.strftime("%H:%M")}] #{m.author.name}: #{m.content}")
+    #bot.send_message("488290626572648469", m.attachments.last.url) if m.attachments.any?
+  #end
 
-  p "chain"
+  # send manual message
+  #bot.send_message("439031597107249154", "Whatever, don't focus so much on a random markov message, I moved on already.")
+
   #p bot.users#.each do |u|
   #  next if u.id == 442538300884910080
   #  p u.name

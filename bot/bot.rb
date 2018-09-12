@@ -3,7 +3,7 @@ require 'google_custom_search_api'
 require 'nokogiri'
 require 'yaml'
 require 'yaml/store'
-require 'markov-polo'
+require './lib/markov-polo'
 
 BOT_PREFIX = "rubi"
 google_api = true
@@ -144,8 +144,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} question .+/i) do |event|
   seed = Time.now.to_date.iso8601
   key << seed
 
-  answer = Digest::MD5.hexdigest(key).to_i(16) % 2
-  if answer == 1
+  if Digest::MD5.hexdigest(key).to_i(16).odd?
     event.respond ["Yes, indeed.", "Yeah", "Sure", "Why not", "Totally."].sample
   else
     event.respond ["Definitely not.", "Nope", "No", "Don't think so."].sample
@@ -281,9 +280,11 @@ end
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} markov.*/i) do |event|
   m = event.message.content
   i = 1
-  i = m[m.length-1].to_i if m[m.length-1] =~ /[1-9]/
+  i = m[-1].to_i if m[-1] =~ /[1-9]/
+  key = s.split[2]
+  key = "__start__" if key.nil? || key =~ /^[0-9]+$/
   i.times do
-    event.respond chain.generate
+    event.respond chain.generate(key)
   end
 end
 
