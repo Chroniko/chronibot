@@ -263,10 +263,8 @@ bot.message do |event|
 
   # markov
   chain << m unless m.downcase.start_with?("#{BOT_PREFIX} ", "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10 || event.server.id == ENV.fetch("REZIDENCA_ID").to_i
-  if rand < 0.005
-    markov_response = chain.generate
-    event.respond markov_response
-    bot.send_message("478918445132546068", "Rubine: #{markov_response}") if event.channel.id == 439700683990630402
+  if rand < 0.025
+    event.respond chain.generate unless event.server.id.to_s == ENV.fetch('CANELE_ID')
   end
 
   # channel tracker
