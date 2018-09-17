@@ -34,26 +34,10 @@ module MarkovPolo
     def to_hash; to_h; end
     def load hash; @data = hash; end
 
-    def generate
-      last = START_TOKEN
-      total = []
-      while last != END_TOKEN
-        choices = []
-        @data[last].each do |key, val|
-          val.times { choices << key }
-        end
-        chosen = choices.sample
-
-        total << chosen unless chosen == END_TOKEN
-        last = chosen
-      end
-      total.join " "
-    end
-
-    def generate_from(start)
-      return start unless @data.has_key?(start)
-      last = start
-      total = [start]
+    def generate(start = nil)
+      return start unless start.nil? || @data.has_key?(start)
+      last = start || START_TOKEN
+      total = [start].compact
       while last != END_TOKEN
         choices = []
         @data[last].each do |key, val|
