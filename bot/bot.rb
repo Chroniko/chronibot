@@ -264,7 +264,7 @@ bot.message do |event|
   # markov
   chain << m unless m.downcase.start_with?("#{BOT_PREFIX} ", "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10 || event.server.id == ENV.fetch("REZIDENCA_ID").to_i
   if rand < 0.025
-    event.respond chain.generate unless event.server.id.to_s == ENV.fetch('CANELE_ID')
+    event.respond chain.generate unless [ENV.fetch('CANELE_ID'), ENV.fetch('VANGUARD_ID')].include?(event.server.id.to_s)
   end
 
   # channel tracker
