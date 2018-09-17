@@ -284,7 +284,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} markov.*/i) do |event|
     if key.nil? || key =~ /^[0-9]+$/
       event.respond chain.generate
     else
-      event.respond chain.generate_from(key)
+      event.respond chain.generate(key)
     end
   end
 end
