@@ -53,7 +53,7 @@ module MarkovPolo
     end
 
     def generate(start)
-      return start unless start.nil? || @data.has_key?(start)
+      return [start] unless start.nil? || @data.has_key?(start)
       last = start || START_TOKEN
       total = [start].compact
       while last != END_TOKEN
