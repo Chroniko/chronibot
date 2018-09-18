@@ -14,10 +14,20 @@ module MarkovPolo
     end
 
     def << content; push content; end
+    def >> content; reverse_push content; end
 
     def push content
       last = START_TOKEN
       content.split.each do |word|
+        add_member last, word
+        last = word
+      end
+      add_member last, END_TOKEN
+    end
+
+    def reverse_push content
+      last = START_TOKEN
+      content.split.reverse_each do |word|
         add_member last, word
         last = word
       end
@@ -34,7 +44,15 @@ module MarkovPolo
     def to_hash; to_h; end
     def load hash; @data = hash; end
 
-    def generate(start = nil)
+    def markov(start = nil)
+      generate(start).join " "
+    end
+
+    def remarkov(start = nil)
+      generate(start).reverse.join " "
+    end
+
+    def generate(start)
       return start unless start.nil? || @data.has_key?(start)
       last = start || START_TOKEN
       total = [start].compact
@@ -48,9 +66,9 @@ module MarkovPolo
         total << chosen unless chosen == END_TOKEN
         last = chosen
       end
-      total.join " "
+      total
     end
 
-    private :add_member
+    private :add_member, :generate
   end
 end

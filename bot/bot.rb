@@ -12,6 +12,8 @@ last_tracked_channel = 0
 bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
 chain = MarkovPolo::Chain.new
 chain << "bunnies are the best"
+reverse_chain = MarkovPolo::Chain.new
+reverse_chain >> "bunnies are the best"
 
 lite_db = YAML::Store.new "lite_db.store"
 lite_db.transaction do
@@ -34,7 +36,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} help/i) do |event|
     embed.add_field(name: "Ero - #{BOT_PREFIX} ero <image tags>", value: "NSFW! Otherwise same as **Art**.", inline: false)
     embed.add_field(name: "Youtube - #{BOT_PREFIX} yt|youtube <input>", value: "Post a Youtube video result. Requests limited to 100 per day.")
     embed.add_field(name: "Anime - #{BOT_PREFIX} anime <title>", value: "Return AniDB entry for matching title. AniDB requests limited to one per 5s.", inline: false)
-    embed.add_field(name: "Markov - #{BOT_PREFIX} markov (#)", value: "Generate sentences via markov chain from messages seen in channels. Can suffix a 1-9 number for multiple results.", inline: false)
+    embed.add_field(name: "Markov - #{BOT_PREFIX} markov (<key>) (#)", value: "Generate sentences via markov chain from messages seen in channels. Optional key which to start generating sentences from. Variants: remarkov - generates sentence from key backwards, mmarkov - generates sentence from key both ways. Can suffix a 1-9 number for multiple results.", inline: false)
   end
 end
 
@@ -262,9 +264,12 @@ bot.message do |event|
   end
 
   # markov
-  chain << m unless m.downcase.start_with?("#{BOT_PREFIX} ", "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10 || event.server.id == ENV.fetch("REZIDENCA_ID").to_i
-  if rand < 0.025
-    event.respond chain.generate unless [ENV.fetch('CANELE_ID'), ENV.fetch('VANGUARD_ID')].include?(event.server.id.to_s)
+  unless m.downcase.start_with?("#{BOT_PREFIX} ", "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10 || event.server.id == ENV.fetch("REZIDENCA_ID").to_i
+    chain << m
+    reverse_chain >> m
+  end
+  if rand < 0.01
+    event.respond chain.markov unless [ENV.fetch('CANELE_ID'), ENV.fetch('VANGUARD_ID')].include?(event.server.id.to_s)
   end
 
   # channel tracker
@@ -275,16 +280,21 @@ bot.message do |event|
   last_tracked_channel = event.channel.id
 end
 
-bot.message(content: /#{Regexp.quote(BOT_PREFIX)} markov.*/i) do |event|
+bot.message(content: /#{Regexp.quote(BOT_PREFIX)} (markov|remarkov|mmarkov).*/i) do |event|
   m = event.message.content
   i = 1
   i = m[-1].to_i if m[-1] =~ /[1-9]/
-  key = m.split[2]
+  key = m.split[2] unless m.split[2] =~ /^[0-9]+$/
   i.times do
-    if key.nil? || key =~ /^[0-9]+$/
-      event.respond chain.generate
-    else
-      event.respond chain.generate(key)
+    case m.split[1]
+    when "markov"
+      event.respond chain.markov(key)
+    when "remarkov"
+      event.respond reverse_chain.remarkov(key)
+    when "mmarkov"
+      tail = chain.markov(key)
+      head = reverse_chain.remarkov(key)[/(.*)\s/,1]
+      event.respond([head, tail].join " ")
     end
   end
 end
