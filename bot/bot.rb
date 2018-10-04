@@ -168,7 +168,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} (yt|youtube) .+/i) do |event|
     key = m[BOT_PREFIX.length+9..m.length]
   end
   results = GoogleCustomSearchApi.search(key)
-  event.respond results["items"].sample["link"]
+  event.respond results["items"].first(3).sample["link"]
 end
 
 bot.message(content: /#{Regexp.quote(BOT_PREFIX)} anime .+/i) do |event|
@@ -264,12 +264,12 @@ bot.message do |event|
   end
 
   # markov
-  unless m.downcase.start_with?("#{BOT_PREFIX} ", "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10 || event.server.id == ENV.fetch("REZIDENCA_ID").to_i
+  unless m.downcase.start_with?("#{BOT_PREFIX} ", "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10 || event.server.id == ENV.fetch('REZIDENCA_ID').to_i
     chain << m
     reverse_chain >> m
   end
   if rand < 0.01
-    event.respond chain.markov unless [ENV.fetch('CANELE_ID'), ENV.fetch('VANGUARD_ID')].include?(event.server.id.to_s)
+    event.respond chain.markov unless [ENV.fetch('CANELE_ID'), ENV.fetch('VANGUARD_ID'), ENV.fetch('REZIDENCA_ID')].include?(event.server.id.to_s)
   end
 
   # channel tracker
