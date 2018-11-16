@@ -261,6 +261,12 @@ bot.message do |event|
   elsif event.channel.id == 470261896432451585
     bot.send_message("488290626572648469", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
     bot.send_message("488290626572648469", event.message.attachments.last.url) if event.message.attachments.any?
+  elsif event.channel.id == 511228429887078410
+    bot.send_message("513011290382270464", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("513011290382270464", event.message.attachments.last.url) if event.message.attachments.any?
+  elsif event.channel.id == 388410837116649474
+    bot.send_message("513011169246707714", "[#{event.message.timestamp.strftime("%H:%M")}] #{event.author.display_name}: #{m}")
+    bot.send_message("513011169246707714", event.message.attachments.last.url) if event.message.attachments.any?
   end
 
   # markov
