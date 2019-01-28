@@ -20,7 +20,11 @@ lite_db.transaction do
   lite_db["anidb"] = { "last_query_at" => Time.now }
 end
 
-bot.message(content: /#{Regexp.quote(BOT_PREFIX)} help/i) do |event|
+def quoted_prefix
+  Regexp.quote(BOT_PREFIX)
+end
+
+bot.message(content: /#{quoted_prefix} help/i) do |event|
   event.respond "Thank you for using #{bot.profile.name} services. <:botblush:456053146737967115>"
   event.channel.send_embed do |embed|
     embed.title = "Bot commands:"
@@ -40,7 +44,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} help/i) do |event|
   end
 end
 
-bot.message(content: /#{Regexp.quote(BOT_PREFIX)} name .+/i) do |event|
+bot.message(content: /#{quoted_prefix} name .+/i) do |event|
   if event.user.id.to_s == ENV.fetch('MY_ID')
     m = event.message.content
     key = m[BOT_PREFIX.length+6..m.length]
@@ -51,7 +55,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} name .+/i) do |event|
   end
 end
 
-bot.message(content: /#{Regexp.quote(BOT_PREFIX)} rate .+/i) do |event|
+bot.message(content: /#{quoted_prefix} rate .+/i) do |event|
   m = event.message.content
   key = m[BOT_PREFIX.length+6..m.length].downcase.sub('!', '')
   if key == "me"
@@ -88,7 +92,7 @@ bot.message(content: /.*@everyone.*/i) do |event|
   event.message.react("a:pingdoge:446087751092404244")
 end
 
-bot.message(content: /#{Regexp.quote(BOT_PREFIX)} image .+/i) do |event|
+bot.message(content: /#{quoted_prefix} image .+/i) do |event|
   if google_api
     GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY")
     GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX")
@@ -104,7 +108,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} image .+/i) do |event|
   event.respond results["items"].sample["link"]
 end
 
-bot.message(content: /#{Regexp.quote(BOT_PREFIX)} animate .+/i) do |event|
+bot.message(content: /#{quoted_prefix} animate .+/i) do |event|
   if google_api
     GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY")
     GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX")
@@ -120,7 +124,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} animate .+/i) do |event|
   event.respond results["items"].sample["link"]
 end
 
-bot.message(content: /#{Regexp.quote(BOT_PREFIX)} reddit .+/i) do |event|
+bot.message(content: /#{quoted_prefix} reddit .+/i) do |event|
   m = event.message.content
   if m =~ /.+ [1-9]/
     count = m[m.length-1].to_i
@@ -139,7 +143,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} reddit .+/i) do |event|
   end
 end
 
-bot.message(content: /#{Regexp.quote(BOT_PREFIX)} question .+/i) do |event|
+bot.message(content: /#{quoted_prefix} question .+/i) do |event|
   m = event.message.content
   key = m[BOT_PREFIX.length+10..m.length].downcase
 
@@ -153,12 +157,12 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} question .+/i) do |event|
   end
 end
 
-bot.message(content: /#{Regexp.quote(BOT_PREFIX)} (decide|choose) .+(\/.+)+/i) do |event|
+bot.message(content: /#{quoted_prefix} (decide|choose) .+(\/.+)+/i) do |event|
   m = event.message.content
   event.respond m[BOT_PREFIX.length+8..m.length].split("/").sample
 end
 
-bot.message(content: /#{Regexp.quote(BOT_PREFIX)} (yt|youtube) .+/i) do |event|
+bot.message(content: /#{quoted_prefix} (yt|youtube) .+/i) do |event|
   GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY_3")
   GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX_3")
   m = event.message.content
@@ -171,7 +175,7 @@ bot.message(content: /#{Regexp.quote(BOT_PREFIX)} (yt|youtube) .+/i) do |event|
   event.respond results["items"].first(3).sample["link"]
 end
 
-bot.message(content: /#{Regexp.quote(BOT_PREFIX)} anime .+/i) do |event|
+bot.message(content: /#{quoted_prefix} anime .+/i) do |event|
   yml = YAML.load_file('lite_db.store')
   if yml["anidb"]["last_query_at"] > Time.now - 5
     event.respond "Please do not spam AniDB requests."
@@ -286,7 +290,7 @@ bot.message do |event|
   last_tracked_channel = event.channel.id
 end
 
-bot.message(content: /#{Regexp.quote(BOT_PREFIX)} (markov|remarkov|mmarkov).*/i) do |event|
+bot.message(content: /#{quoted_prefix} (markov|remarkov|mmarkov).*/i) do |event|
   m = event.message.content
   i = 1
   i = m[-1].to_i if m[-1] =~ /[1-9]/
