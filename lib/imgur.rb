@@ -1,4 +1,3 @@
-require 'imgur/version'
 require 'httparty'
 require 'net/http'
 

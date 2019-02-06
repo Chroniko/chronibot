@@ -4,6 +4,7 @@ require 'nokogiri'
 require 'yaml'
 require 'yaml/store'
 require './lib/markov-polo'
+require './lib/imgur'
 
 BOT_PREFIX = "rubi"
 google_api = true
@@ -321,6 +322,11 @@ bot.message(content: /#{quoted_prefix} (markov|remarkov|mmarkov).*/i) do |event|
       event.respond([head, tail].join " ")
     end
   end
+end
+
+bot.message(content: /#{quoted_prefix} silence.*/) do |event|
+  client = Imgur.new(ENV['CLIENT_ID'])
+  event.respond("#{client.get_album("HJAUs1m").images.sample.link}?t=#{SecureRandom.hex(8)}")
 end
 
 bot.pm do |event|
