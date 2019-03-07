@@ -3,8 +3,10 @@ require 'google_custom_search_api'
 require 'nokogiri'
 require 'yaml'
 require 'yaml/store'
-require './lib/markov-polo'
-require './lib/imgur'
+
+require_relative '../lib/imgur'
+require_relative '../lib/markov-polo'
+require_relative '../lib/spoilers'
 
 BOT_PREFIX = "rubi"
 google_api = true
@@ -219,6 +221,21 @@ bot.message(content: /#{quoted_prefix} anime .+/i) do |event|
         embed.add_field(name: "Description", value: desc, inline: false)
         embed.image = { url: results["items"].first["link"] }
       end
+    end
+  end
+end
+
+bot.message(content: /#{quoted_prefix} (spoilers|racing)(.*)/i) do |event|
+  week_offset = event.message.content[/\+(\d)$/, 1].to_i
+
+  spoilers = Spoilers.new(week_offset: week_offset)
+
+  event.channel.send_embed do |embed|
+    embed.title = spoilers.title
+    embed.color = "36513e"
+
+    spoilers.current_events.each do |e|
+      embed.add_field(name: e.category, value: e.name, inline: true)
     end
   end
 end
