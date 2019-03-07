@@ -226,7 +226,9 @@ bot.message(content: /#{quoted_prefix} anime .+/i) do |event|
   end
 end
 
-bot.message(content: /#{quoted_prefix} (spoilers|racing)(.*)/i) do |event|
+ZAPIER_BOT_ID = 541992229586075668
+
+->(event) do
   week_offset = event.message.content[/\+(\d)$/, 1].to_i
 
   spoilers = Spoilers.new(week_offset: week_offset)
@@ -237,6 +239,13 @@ bot.message(content: /#{quoted_prefix} (spoilers|racing)(.*)/i) do |event|
 
     spoilers.current_events.each do |e|
       embed.add_field(name: e.category, value: e.name, inline: true)
+    end
+  end
+end.tap do |spoilers|
+  bot.message(content: /#{quoted_prefix} (spoilers|racing)(.*)/i, &spoilers)
+  bot.message(content: /.*There are.+events this week.*/) do |event|
+    if event.message.user.id == ZAPIER_BOT_ID
+      spoilers.(event)
     end
   end
 end
