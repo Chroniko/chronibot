@@ -44,6 +44,7 @@ bot.message(content: /#{quoted_prefix} help/i) do |event|
     embed.add_field(name: "Youtube - #{BOT_PREFIX} yt|youtube <input>", value: "Post a Youtube video result. Requests limited to 100 per day.")
     embed.add_field(name: "Anime - #{BOT_PREFIX} anime <title>", value: "Return AniDB entry for matching title. AniDB requests limited to one per 5s.", inline: false)
     embed.add_field(name: "Markov - #{BOT_PREFIX} markov (<key>) (#)", value: "Generate sentences via markov chain from messages seen in channels. Optional key which to start generating sentences from. Variants: remarkov - generates sentence from key backwards, mmarkov - generates sentence from key both ways. Can suffix a 1-9 number for multiple results.", inline: false)
+    embed.add_field(name: "Racing - #{BOT_PREFIX} racing|spoilers [+N]", value: "Show motorports events for this week. Append +1 for next week, etc.", inline: false)
   end
 end
 
