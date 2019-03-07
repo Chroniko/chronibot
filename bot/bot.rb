@@ -3,8 +3,10 @@ require 'google_custom_search_api'
 require 'nokogiri'
 require 'yaml'
 require 'yaml/store'
-require './lib/markov-polo'
-require './lib/imgur'
+
+require_relative '../lib/imgur'
+require_relative '../lib/markov-polo'
+require_relative '../lib/spoilers'
 
 BOT_PREFIX = "rubi"
 google_api = true
@@ -42,6 +44,7 @@ bot.message(content: /#{quoted_prefix} help/i) do |event|
     embed.add_field(name: "Youtube - #{BOT_PREFIX} yt|youtube <input>", value: "Post a Youtube video result. Requests limited to 100 per day.")
     embed.add_field(name: "Anime - #{BOT_PREFIX} anime <title>", value: "Return AniDB entry for matching title. AniDB requests limited to one per 5s.", inline: false)
     embed.add_field(name: "Markov - #{BOT_PREFIX} markov (<key>) (#)", value: "Generate sentences via markov chain from messages seen in channels. Optional key which to start generating sentences from. Variants: remarkov - generates sentence from key backwards, mmarkov - generates sentence from key both ways. Can suffix a 1-9 number for multiple results.", inline: false)
+    embed.add_field(name: "Racing - #{BOT_PREFIX} racing|spoilers [+N]", value: "Show motorports events for this week. Append +1 for next week, etc.", inline: false)
   end
 end
 
@@ -219,6 +222,21 @@ bot.message(content: /#{quoted_prefix} anime .+/i) do |event|
         embed.add_field(name: "Description", value: desc, inline: false)
         embed.image = { url: results["items"].first["link"] }
       end
+    end
+  end
+end
+
+bot.message(content: /#{quoted_prefix} (spoilers|racing)(.*)/i) do |event|
+  week_offset = event.message.content[/\+(\d)$/, 1].to_i
+
+  spoilers = Spoilers.new(week_offset: week_offset)
+
+  event.channel.send_embed do |embed|
+    embed.title = spoilers.title
+    embed.color = "36513e"
+
+    spoilers.current_events.each do |e|
+      embed.add_field(name: e.category, value: e.name, inline: true)
     end
   end
 end
