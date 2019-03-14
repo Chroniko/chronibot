@@ -226,8 +226,6 @@ bot.message(content: /#{quoted_prefix} anime .+/i) do |event|
   end
 end
 
-ZAPIER_BOT_ID = 541992229586075668
-
 ->(event) do
   week_offset = event.message.content[/\+(\d)$/, 1].to_i
 
@@ -243,8 +241,8 @@ ZAPIER_BOT_ID = 541992229586075668
   end
 end.tap do |spoilers|
   bot.message(content: /#{quoted_prefix} (spoilers|racing)(.*)/i, &spoilers)
-  bot.message(content: /.*There are.+events this week.*/) do |event|
-    if event.message.user.id == ZAPIER_BOT_ID
+  bot.message(content: /.*There are.+events? this week.*/) do |event|
+    if event.message.user.name == "Rushsync"
       spoilers.(event)
     end
   end
