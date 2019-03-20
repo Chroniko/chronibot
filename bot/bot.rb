@@ -80,10 +80,6 @@ bot.message(content: /.*go+d *bo+t.*/i) do |event|
   event.message.react("oowwoaaa:435243426913714177")
 end
 
-bot.message(content: /.*ba+d *bo+t.*|.*\<\:GWchadMEGATHINK\:366999806343774218\>.*|.*\<\:Think\:357607104418283522\>.*|.*\<\:think\:443803808259244032\>.*/i) do |event|
-  event.message.react("miyanofu:443849528102223873")
-end
-
 bot.message(content: /.*(´･ω･`).*/i) do |event|
   event.respond [
     "DENKO RUN",
@@ -352,11 +348,6 @@ end
 bot.message(content: /#{quoted_prefix} silence.*/i) do |event|
   client = Imgur.new(ENV['CLIENT_ID'])
   event.respond("#{client.get_album("HJAUs1m").images.sample.link}?t=#{SecureRandom.hex(8)}")
-end
-
-bot.message(content: /.*:\S*ping\S*:.*/i) do |event|
-  next unless event.channel.id == 557335254986260509
-  event.message.delete
 end
 
 bot.pm do |event|
