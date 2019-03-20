@@ -349,9 +349,14 @@ bot.message(content: /#{quoted_prefix} (markov|remarkov|mmarkov).*/i) do |event|
   end
 end
 
-bot.message(content: /#{quoted_prefix} silence.*/) do |event|
+bot.message(content: /#{quoted_prefix} silence.*/i) do |event|
   client = Imgur.new(ENV['CLIENT_ID'])
   event.respond("#{client.get_album("HJAUs1m").images.sample.link}?t=#{SecureRandom.hex(8)}")
+end
+
+bot.message(content: /.*:\S*ping\S*:.*/i) do |event|
+  next unless event.channel.id == 557335254986260509
+  event.message.delete
 end
 
 bot.pm do |event|
