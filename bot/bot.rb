@@ -6,6 +6,7 @@ require 'yaml/store'
 
 require_relative '../lib/imgur'
 require_relative '../lib/markov-polo'
+require_relative '../lib/player_order'
 require_relative '../lib/spoilers'
 
 BOT_PREFIX = "rubi"
@@ -256,6 +257,45 @@ bot.message(content: /#{quoted_prefix} hammer .+/i) do |event|
     "http://www.iamfatterthanyou.com/blog/wp-content/uploads/2012/06/ch3.jpg",
     "https://i.pinimg.com/originals/39/dd/14/39dd148a23088054a6e78276c19f0eed.jpg",
   ].sample
+end
+
+BOARDGAME_CHANNEL_IDS = { test: 539510407459504128, boar: 549267988155727889 }
+BOARDGAME_PLAYER_IDS = {
+  chrono: 268723800030445569,
+  darjo: 367573587055476737,
+  fire: 400021825637187586,
+  njok: 448954998219341824,
+}
+
+global_player_order = Hash.new { |h, k| h[k] = PlayerOrder.new }
+
+# User mentions look like this: "<@448954998219341824>"
+def mention(player_id)
+  "<@#{player_id}>"
+end
+
+bot.message do |event|
+  if BOARDGAME_CHANNEL_IDS.values.include?(event.channel.id)
+    # Check if the message contained a user mention and nothing else
+    player_id = BOARDGAME_PLAYER_IDS.values.find { |id| mention(id) == event.message.content }
+    if player_id
+      player_order = global_player_order[event.channel.id]
+      player_order.mark(player_id)
+      p player_order
+    end
+  end
+end
+
+bot.message(content: /next/) do |event|
+  if BOARDGAME_CHANNEL_IDS.values.include?(event.channel.id)
+    player_order = global_player_order[event.channel.id]
+    if next_player_id = player_order.next_player
+      player_order.advance
+      event.respond mention(next_player_id)
+    else
+      warn "Unable to determine next player"
+    end
+  end
 end
 
 bot.message do |event|
