@@ -1,27 +1,16 @@
-class PlayerOrder
-  def initialize
-    @buffer = []
-  end
+# Poor man's ring buffer
 
-  def mark(player)
-    player_position = @buffer.index(player)
-    @buffer = @buffer[0, player_position] if player_position
-    @buffer.unshift(player)
-    self
+class PlayerOrder
+  def initialize(order)
+    @buffer = order
   end
 
   def advance
-    player = @buffer.pop
-    @buffer.unshift(player)
-    self
+    new_order = @buffer[1..-1] << next_player
+    self.class.new(new_order)
   end
 
   def next_player
-    @buffer.last
+    @buffer.first
   end
-
-  def to_ary
-    @buffer
-  end
-  alias to_a to_ary
 end
