@@ -7,6 +7,7 @@ require 'yaml/store'
 require_relative '../lib/imgur'
 require_relative '../lib/markov-polo'
 require_relative '../lib/player_order'
+require_relative '../lib/player_order_store'
 require_relative '../lib/spoilers'
 
 BOT_PREFIX = "rubi"
@@ -259,7 +260,6 @@ bot.message(content: /#{quoted_prefix} hammer .+/i) do |event|
   ].sample
 end
 
-BOARDGAME_CHANNEL_IDS = { test: 539510407459504128, boar: 549267988155727889 }
 BOARDGAME_PLAYER_IDS = {
   chrono: 268723800030445569,
   darjo: 367573587055476737,
@@ -267,34 +267,29 @@ BOARDGAME_PLAYER_IDS = {
   njok: 448954998219341824,
 }
 
-global_player_order = Hash.new { |h, k| h[k] = PlayerOrder.new }
-
 # User mentions look like this: "<@448954998219341824>"
 def mention(player_id)
   "<@#{player_id}>"
 end
 
-bot.message do |event|
-  if BOARDGAME_CHANNEL_IDS.values.include?(event.channel.id)
-    # Check if the message contained a user mention and nothing else
-    player_id = BOARDGAME_PLAYER_IDS.values.find { |id| mention(id) == event.message.content }
-    if player_id
-      player_order = global_player_order[event.channel.id]
-      player_order.mark(player_id)
-      p player_order
-    end
+bot.message(content: /board init.+/) do |event|
+  player_ids = event.message.content.scan(/<@(\d+)>/).flatten
+  if player_ids.any?
+    player_order = PlayerOrder.new(player_ids)
+    PlayerOrderStore.set(channel: event.channel, value: player_order)
   end
+  event.respond ":boar: :thumbsup:"
 end
 
-bot.message(content: /next/) do |event|
-  if BOARDGAME_CHANNEL_IDS.values.include?(event.channel.id)
-    player_order = global_player_order[event.channel.id]
-    if next_player_id = player_order.next_player
-      player_order.advance
-      event.respond mention(next_player_id)
-    else
-      warn "Unable to determine next player"
-    end
+bot.message(content: /board next/) do |event|
+  if player_order = PlayerOrderStore.get(channel: event.channel)
+    next_player_id = player_order.next_player
+    new_order = player_order.advance
+    PlayerOrderStore.set(channel: event.channel, value: new_order)
+
+    event.respond(mention(next_player_id))
+  else
+    event.respond(":boar: :warning: Unable to determine next player")
   end
 end
 
