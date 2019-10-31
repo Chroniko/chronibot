@@ -393,7 +393,14 @@ bot.message(content: /#{quoted_prefix} silence.*/i) do |event|
 end
 
 bot.pm do |event|
-  unless event.message.user.id == ENV.fetch("MY_ID").to_i
+  if event.message.user.id == ENV.fetch("MY_ID").to_i
+    m = event.message.content
+    if m.split[0] == "send"
+      bot.send_message(m.split[1], m.split[2..-1].join(" "))
+    elsif ["pm", "dm"].include?(m.split[0])
+      bot.user(m.split[1]).pm(m.split[2..-1].join(" "))
+    end
+  else
     bot.user(ENV.fetch("MY_ID")).pm("PM from #{event.message.user.name}: #{event.message.content}")
     bot.user(ENV.fetch("MY_ID")).pm(event.message.attachments.last.url) if event.message.attachments.any?
   end
