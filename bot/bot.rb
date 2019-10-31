@@ -25,6 +25,10 @@ redis_reverse_chain = redis.get("reverse_chain")
 reverse_chain = redis_reverse_chain ? MarkovPolo::Chain.new(JSON.parse(redis_reverse_chain)) : MarkovPolo::Chain.new
 reverse_chain >> "bunnies are the best" if reverse_chain.to_h.empty?
 
+answers = Hash.new
+wrong_answers = Hash.new
+last_wrong_answerer = Hash.new
+
 lite_db = YAML::Store.new "lite_db.store"
 lite_db.transaction do
   lite_db["anidb"] = { "last_query_at" => Time.now }
@@ -403,6 +407,53 @@ bot.pm do |event|
   else
     bot.user(ENV.fetch("MY_ID")).pm("PM from #{event.message.user.name}: #{event.message.content}")
     bot.user(ENV.fetch("MY_ID")).pm(event.message.attachments.last.url) if event.message.attachments.any?
+  end
+end
+
+bot.message(content: /#{quoted_prefix} quiz.*/i) do |event|
+  result = JSON.parse(HTTParty.get("https://opentdb.com/api.php?amount=1&type=multiple").body)["results"][0]
+  answers[event.server.id.to_s] = result["correct_answer"].downcase
+  wrong_answers[event.server.id.to_s] = result["incorrect_answers"].map(&:downcase)
+  $quiz_answer_points = 2
+  last_wrong_answerer[event.server.id.to_s] = nil
+  event.respond(result["question"])
+
+  Thread.new do
+    sleep 10
+    next unless answers[event.server.id.to_s]
+    event.respond(([result["correct_answer"]] + result["incorrect_answers"]).shuffle.join("\n"))
+    $quiz_answer_points = 1
+  end
+end
+
+# Quiz answers
+bot.message do |event|
+  m = event.message.content
+  if m.downcase == answers[event.server.id.to_s]
+    if event.message.user.id == last_wrong_answerer[event.server.id.to_s]
+      event.respond("Cannot try to answer twice in a row.")
+    else
+      answers[event.server.id.to_s] = nil
+      last_wrong_answerer[event.server.id.to_s] = nil
+
+      redis.set("quiz_points", "{}") unless redis.get("quiz_points")
+      quiz_points = JSON.parse(redis.get("quiz_points"))
+      quiz_points[event.server.id.to_s] = {} unless quiz_points[event.server.id.to_s]
+      quiz_points[event.server.id.to_s][event.message.user.id.to_s] =
+        quiz_points[event.server.id.to_s][event.message.user.id.to_s].to_i + $quiz_answer_points
+      redis.set("quiz_points", quiz_points.to_json)
+
+      event.respond("Correct!")
+      event.respond(quiz_points[event.server.id.to_s].sort_by(&:last).reverse
+        .map { |user_id, value| "*#{bot.user(user_id).name}*: #{value}" }.join("\n"))
+    end
+
+  elsif wrong_answers[event.server.id.to_s] &.include?(m.downcase)
+    if event.message.user.id == last_wrong_answerer[event.server.id.to_s]
+      event.respond("Cannot try to answer twice in a row.")
+    else
+      last_wrong_answerer[event.server.id.to_s] = event.message.user.id
+    end
   end
 end
 
