@@ -3,18 +3,22 @@ require 'google_custom_search_api'
 require 'dotenv/load'
 require 'nokogiri'
 require 'yaml/store'
-#require 'redis'
+require 'redis'
 require './lib/markov-polo'
+require 'pry'
 
 GOOGLE_API_KEY = ENV.fetch("GOOGLE_API_KEY")
 GOOGLE_SEARCH_CX = ENV.fetch("GOOGLE_SEARCH_CX")
 BOT_PREFIX = "rubi"
 
 bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
-#redis = Redis.new
-chain = MarkovPolo::Chain.new
-bot.channel("439031597107249154").history(100).reverse_each do |m|
-  chain << m.content
+redis = Redis.new(url: ENV.fetch('REDIS_URL'))
+redis_chain = redis.get("chain")
+chain = redis_chain ? MarkovPolo::Chain.new(JSON.parse(redis_chain)) : MarkovPolo::Chain.new
+if chain.to_h.empty?
+  bot.channel("439031597107249154").history(100).reverse_each do |m|
+    chain << m.content
+  end
 end
 
 lite_db = YAML::Store.new "lite_db.store"
@@ -38,6 +42,9 @@ bot.message(content: /aaaa.*/) do |event|
   #event.channel.users.each {|u| p u if u.id == ENV.fetch('MY_ID').to_i}
   #p m
   #bot.send_message("478918445132546068", "#{event.author.display_name}: #{m} ##{event.channel.name}: #{event.channel.id}")
+end
+
+bot.message(content: /test/i) do |event|
 end
 
 bot.message do |event|

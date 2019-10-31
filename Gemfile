@@ -10,4 +10,5 @@ gem 'icalendar'
 
 group :test, :development do
   gem 'rspec'
+  gem 'pry', '~> 0.12.2'
 end

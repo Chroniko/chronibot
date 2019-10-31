@@ -3,6 +3,7 @@ require 'google_custom_search_api'
 require 'nokogiri'
 require 'yaml'
 require 'yaml/store'
+require 'redis'
 
 require_relative '../lib/imgur'
 require_relative '../lib/markov-polo'
@@ -15,10 +16,14 @@ google_api = true
 last_tracked_channel = 0
 
 bot = Discordrb::Bot.new token: ENV.fetch('BOT_TOKEN')
-chain = MarkovPolo::Chain.new
-chain << "bunnies are the best"
-reverse_chain = MarkovPolo::Chain.new
-reverse_chain >> "bunnies are the best"
+redis = Redis.new(url: ENV.fetch('REDIS_URL'))
+
+redis_chain = redis.get("chain")
+chain = redis_chain ? MarkovPolo::Chain.new(JSON.parse(redis_chain)) : MarkovPolo::Chain.new
+chain << "bunnies are the best" if chain.to_h.empty?
+redis_reverse_chain = redis.get("reverse_chain")
+reverse_chain = redis_reverse_chain ? MarkovPolo::Chain.new(JSON.parse(redis_reverse_chain)) : MarkovPolo::Chain.new
+reverse_chain >> "bunnies are the best" if reverse_chain.to_h.empty?
 
 lite_db = YAML::Store.new "lite_db.store"
 lite_db.transaction do
@@ -345,9 +350,11 @@ bot.message do |event|
   end
 
   # markov
-  unless m.downcase.start_with?("#{BOT_PREFIX} ", "!", "=", "&", "p!", ":", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10 || event.server.id == ENV.fetch('REZIDENCA_ID').to_i
+  unless m.downcase.start_with?("#{BOT_PREFIX} ", "!", "=", "&", "p!", ":", "$", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10 || event.server.id == ENV.fetch('REZIDENCA_ID').to_i
     chain << m
+    redis.set("chain", chain.to_h.to_json)
     reverse_chain >> m
+    redis.set("reverse_chain", reverse_chain.to_h.to_json)
   end
   if rand < 0.01
     event.respond chain.markov unless [ENV.fetch('CANELE_ID'), ENV.fetch('VANGUARD_ID'), ENV.fetch('REZIDENCA_ID')].include?(event.server.id.to_s)
