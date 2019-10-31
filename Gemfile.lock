@@ -20,6 +20,7 @@ GEM
     google_custom_search_api (2.0.0)
       addressable
       httparty
+    htmlentities (4.3.4)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     httparty (0.16.2)
@@ -77,6 +78,7 @@ PLATFORMS
 DEPENDENCIES
   discordrb
   google_custom_search_api
+  htmlentities
   httparty
   icalendar
   markov-polo

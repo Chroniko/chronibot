@@ -4,6 +4,7 @@ require 'nokogiri'
 require 'yaml'
 require 'yaml/store'
 require 'redis'
+require 'htmlentities'
 
 require_relative '../lib/imgur'
 require_relative '../lib/markov-polo'
@@ -412,16 +413,17 @@ end
 
 bot.message(content: /#{quoted_prefix} quiz.*/i) do |event|
   result = JSON.parse(HTTParty.get("https://opentdb.com/api.php?amount=1&type=multiple").body)["results"][0]
-  answers[event.server.id.to_s] = result["correct_answer"].downcase
-  wrong_answers[event.server.id.to_s] = result["incorrect_answers"].map(&:downcase)
+  answers[event.server.id.to_s] = HTMLEntities.new.decode(result["correct_answer"].downcase)
+  wrong_answers[event.server.id.to_s] = result["incorrect_answers"]
+    .map { |incorrect| HTMLEntities.new.decode(incorrect.downcase) }
   $quiz_answer_points = 2
   last_wrong_answerer[event.server.id.to_s] = nil
-  event.respond(result["question"])
+  event.respond(HTMLEntities.new.decode(result["question"]))
 
   Thread.new do
     sleep 10
     next unless answers[event.server.id.to_s]
-    event.respond(([result["correct_answer"]] + result["incorrect_answers"]).shuffle.join("\n"))
+    event.respond(HTMLEntities.new.decode(([result["correct_answer"]] + result["incorrect_answers"]).shuffle.join("\n")))
     $quiz_answer_points = 1
   end
 end

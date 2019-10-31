@@ -7,6 +7,7 @@ gem 'nokogiri'
 gem 'redis'
 gem 'markov-polo'
 gem 'icalendar'
+gem 'htmlentities'
 
 group :test, :development do
   gem 'rspec'
