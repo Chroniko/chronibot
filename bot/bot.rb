@@ -445,7 +445,7 @@ bot.message do |event|
         quiz_points[event.server.id.to_s][event.message.user.id.to_s].to_i + $quiz_answer_points
       redis.set("quiz_points", quiz_points.to_json)
 
-      event.respond("Correct!")
+      event.respond("Correct, #{event.message.user.name}!")
       event.respond(quiz_points[event.server.id.to_s].sort_by(&:last).reverse
         .map { |user_id, value| "*#{bot.user(user_id).name}*: #{value}" }.join("\n"))
     end
