@@ -459,4 +459,20 @@ bot.message do |event|
   end
 end
 
+bot.message(content: /#{quoted_prefix} wiki .+/i) do |event|
+  m = event.message.content
+  key = m.split(" ")[2..-1].join(" ")
+  result = HTTParty.get(
+    "https://en.wikipedia.org/w/api.php?action=opensearch&search=" + key,
+    format: :json,
+    headers: { "User-agent" => "Chronibot" }
+  ).parsed_response
+
+  if result[1].any?
+    event.respond(result[2][0] + "\n" + result[3][0])
+  else
+    event.respond("<a:shruggif:491014929910988820>")
+  end
+end
+
 bot.run
