@@ -8,8 +8,6 @@ require 'htmlentities'
 
 require_relative '../lib/imgur'
 require_relative '../lib/markov-polo'
-require_relative '../lib/player_order'
-require_relative '../lib/player_order_store'
 require_relative '../lib/spoilers'
 
 BOT_PREFIX = "rubi"
@@ -256,36 +254,14 @@ end.tap do |spoilers|
   end
 end
 
-BOARDGAME_PLAYER_IDS = {
-  chrono: 268723800030445569,
-  darjo: 367573587055476737,
-  fire: 400021825637187586,
-  njok: 448954998219341824,
-}
+BOT_TEST_CHANNEL_ID = 539510407459504128
+AVTONET_CHANNEL_ID = 684814459625013255
 
-# User mentions look like this: "<@448954998219341824>"
-def mention(player_id)
-  "<@#{player_id}>"
-end
-
-bot.message(content: /board init.+/) do |event|
-  player_ids = event.message.content.scan(/<@(\d+)>/).flatten
-  if player_ids.any?
-    player_order = PlayerOrder.new(player_ids)
-    PlayerOrderStore.set(channel: event.channel, value: player_order)
-  end
-  event.respond ":boar: :thumbsup:"
-end
-
-bot.message(content: /board next/) do |event|
-  if player_order = PlayerOrderStore.get(channel: event.channel)
-    next_player_id = player_order.next_player
-    new_order = player_order.advance
-    PlayerOrderStore.set(channel: event.channel, value: new_order)
-
-    event.respond(mention(next_player_id))
-  else
-    event.respond(":boar: :warning: Unable to determine next player")
+bot.message(content: %r{avto\.net/ads/}i) do |event|
+  if event.channel.id == BOT_TEST_CHANNEL_ID
+    event.channel.send_embed do |embed|
+      embed.add_field(name: "sup", value: "lol", inline: true)
+    end
   end
 end
 
