@@ -256,20 +256,6 @@ end.tap do |spoilers|
   end
 end
 
-bot.message(content: /#{quoted_prefix} hammer .+/i) do |event|
-  event.respond [
-    "https://s3.amazonaws.com/s3.userdata.www.universalsubtitles.org/video/thumbnail/77dc435db61bfc75bf773fd334bbc957ab1c707f.jpg",
-    "https://nefariousreviews.files.wordpress.com/2018/04/city-hunter-hammer.jpg",
-    "https://i.pinimg.com/236x/44/7a/e7/447ae7ab9cd9ab0d0a515b872206177c--city-hunter-angel-heart.jpg",
-    "https://img.fireden.net/a/image/1506/21/1506215921521.jpg",
-    "http://orig13.deviantart.net/0a64/f/2010/263/8/a/coup_de_massue___rendu_final_by_statealchemist86-d2z51bg.jpg",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7H6T24YcowhqZHo8G-c1xdD5owsUutE8w3gDMT9-qAmjXELdI",
-    "https://i.pinimg.com/236x/71/88/37/7188378593322d0f789e8db0985cbe37--city-hunter.jpg",
-    "http://www.iamfatterthanyou.com/blog/wp-content/uploads/2012/06/ch3.jpg",
-    "https://i.pinimg.com/originals/39/dd/14/39dd148a23088054a6e78276c19f0eed.jpg",
-  ].sample
-end
-
 BOARDGAME_PLAYER_IDS = {
   chrono: 268723800030445569,
   darjo: 367573587055476737,
