@@ -1,15 +1,15 @@
 require 'discordrb'
 require 'google_custom_search_api'
 require 'nokogiri'
+require 'open-uri'
 require 'yaml'
 require 'yaml/store'
 require 'redis'
 require 'htmlentities'
 
+require_relative '../lib/avtonet'
 require_relative '../lib/imgur'
 require_relative '../lib/markov-polo'
-require_relative '../lib/player_order'
-require_relative '../lib/player_order_store'
 require_relative '../lib/spoilers'
 
 BOT_PREFIX = "rubi"
@@ -256,50 +256,26 @@ end.tap do |spoilers|
   end
 end
 
-bot.message(content: /#{quoted_prefix} hammer .+/i) do |event|
-  event.respond [
-    "https://s3.amazonaws.com/s3.userdata.www.universalsubtitles.org/video/thumbnail/77dc435db61bfc75bf773fd334bbc957ab1c707f.jpg",
-    "https://nefariousreviews.files.wordpress.com/2018/04/city-hunter-hammer.jpg",
-    "https://i.pinimg.com/236x/44/7a/e7/447ae7ab9cd9ab0d0a515b872206177c--city-hunter-angel-heart.jpg",
-    "https://img.fireden.net/a/image/1506/21/1506215921521.jpg",
-    "http://orig13.deviantart.net/0a64/f/2010/263/8/a/coup_de_massue___rendu_final_by_statealchemist86-d2z51bg.jpg",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7H6T24YcowhqZHo8G-c1xdD5owsUutE8w3gDMT9-qAmjXELdI",
-    "https://i.pinimg.com/236x/71/88/37/7188378593322d0f789e8db0985cbe37--city-hunter.jpg",
-    "http://www.iamfatterthanyou.com/blog/wp-content/uploads/2012/06/ch3.jpg",
-    "https://i.pinimg.com/originals/39/dd/14/39dd148a23088054a6e78276c19f0eed.jpg",
-  ].sample
-end
+AVTONET_CHANNEL_ID = 684814459625013255
 
-BOARDGAME_PLAYER_IDS = {
-  chrono: 268723800030445569,
-  darjo: 367573587055476737,
-  fire: 400021825637187586,
-  njok: 448954998219341824,
-}
+bot.message(content: %r{.*avto\.net/ads/details.*}i) do |event|
+  if event.channel.id == AVTONET_CHANNEL_ID
 
-# User mentions look like this: "<@448954998219341824>"
-def mention(player_id)
-  "<@#{player_id}>"
-end
+    url = event.message.to_s[%r{(https://www\.avto\.net/Ads/details\.asp\?id=\d+)\D?}, 1]
+    uri = Avtonet.proxy_uri(URI(url))
+    ad = Avtonet.new(open(uri.to_s).read)
+    photo_uri = Avtonet.proxy_uri(URI(ad.photo_url))
 
-bot.message(content: /board init.+/) do |event|
-  player_ids = event.message.content.scan(/<@(\d+)>/).flatten
-  if player_ids.any?
-    player_order = PlayerOrder.new(player_ids)
-    PlayerOrderStore.set(channel: event.channel, value: player_order)
-  end
-  event.respond ":boar: :thumbsup:"
-end
-
-bot.message(content: /board next/) do |event|
-  if player_order = PlayerOrderStore.get(channel: event.channel)
-    next_player_id = player_order.next_player
-    new_order = player_order.advance
-    PlayerOrderStore.set(channel: event.channel, value: new_order)
-
-    event.respond(mention(next_player_id))
-  else
-    event.respond(":boar: :warning: Unable to determine next player")
+    event.channel.send_embed do |embed|
+      embed.title = ad.title
+      embed.color = "#92b3e6"
+      embed.add_field(ad.year)
+      embed.add_field(ad.odometer)
+      embed.add_field(ad.price)
+      embed.image = Discordrb::Webhooks::EmbedImage.new(
+        url: photo_uri
+      )
+    end
   end
 end
 
