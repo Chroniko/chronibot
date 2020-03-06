@@ -1,11 +1,13 @@
 require 'discordrb'
 require 'google_custom_search_api'
 require 'nokogiri'
+require 'open-uri'
 require 'yaml'
 require 'yaml/store'
 require 'redis'
 require 'htmlentities'
 
+require_relative '../lib/avtonet'
 require_relative '../lib/imgur'
 require_relative '../lib/markov-polo'
 require_relative '../lib/spoilers'
@@ -254,13 +256,25 @@ end.tap do |spoilers|
   end
 end
 
-BOT_TEST_CHANNEL_ID = 539510407459504128
 AVTONET_CHANNEL_ID = 684814459625013255
 
-bot.message(content: %r{avto\.net/ads/}i) do |event|
-  if event.channel.id == BOT_TEST_CHANNEL_ID
+bot.message(content: %r{.*avto\.net/ads/details.*}i) do |event|
+  if event.channel.id == AVTONET_CHANNEL_ID
+
+    url = event.message.to_s[%r{(https://www\.avto\.net/Ads/details\.asp\?id=\d+)\D?}, 1]
+    uri = Avtonet.proxy_uri(URI(url))
+    ad = Avtonet.new(open(uri.to_s).read)
+    photo_uri = Avtonet.proxy_uri(URI(ad.photo_url))
+
     event.channel.send_embed do |embed|
-      embed.add_field(name: "sup", value: "lol", inline: true)
+      embed.title = ad.title
+      embed.color = "#92b3e6"
+      embed.add_field(ad.year)
+      embed.add_field(ad.odometer)
+      embed.add_field(ad.price)
+      embed.image = Discordrb::Webhooks::EmbedImage.new(
+        url: photo_uri
+      )
     end
   end
 end
