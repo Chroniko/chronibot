@@ -37,7 +37,7 @@ class Avtonet
   private
 
   def title_text
-    doc.at_css("div.OglasDataTitle > h1").text.strip
+    doc.at_css("div.OglasDataTitle:nth-child(2) > h1").text.strip
   end
 
   def price_text
