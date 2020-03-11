@@ -260,7 +260,6 @@ AVTONET_CHANNEL_ID = 684814459625013255
 
 bot.message(content: %r{.*avto\.net/ads/details.*}i) do |event|
   if event.channel.id == AVTONET_CHANNEL_ID
-
     url = event.message.to_s[%r{(https://www\.avto\.net/Ads/details\.asp\?id=\d+)\D?}, 1]
     uri = Avtonet.proxy_uri(URI(url))
     ad = Avtonet.new(open(uri.to_s).read)
@@ -272,6 +271,7 @@ bot.message(content: %r{.*avto\.net/ads/details.*}i) do |event|
       embed.add_field(ad.year)
       embed.add_field(ad.odometer)
       embed.add_field(ad.price)
+      embed.add_field(ad.phone_number)
       embed.image = Discordrb::Webhooks::EmbedImage.new(
         url: photo_uri
       )

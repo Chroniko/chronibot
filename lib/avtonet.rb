@@ -30,6 +30,10 @@ class Avtonet
     to_field("Letnik", year_text)
   end
 
+  def phone_number
+    to_field("Telefon", phone_number_text)
+  end
+
   def photo_url
     doc.at_css("#BigPhoto").attr("src")
   end
@@ -50,6 +54,10 @@ class Avtonet
 
   def year_text
     doc.at_css("div.OglasData:nth-child(5) > div:nth-child(2)").text.strip
+  end
+
+  def phone_number_text
+    doc.at_css(".OglasMenuBoxPhone").text.strip
   end
 
   def to_field(name, value, inline: true)
