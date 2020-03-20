@@ -57,7 +57,9 @@ class Avtonet
   end
 
   def phone_number_text
-    doc.at_css(".OglasMenuBoxPhone").text.strip
+    element = doc.at_css(".OglasMenuBoxPhone")
+    return "" unless element
+    element.text.strip
   end
 
   def to_field(name, value, inline: true)
