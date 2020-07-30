@@ -292,13 +292,6 @@ bot.message do |event|
   if rand < 0.01
     event.respond chain.markov if event.server.id.to_s == ENV.fetch('ETHEREAL_ID')
   end
-
-  # channel tracker
-  ignore_servers = [448750750437474306,470061749350039552,351157784923996170,434769061575000087]
-  next if event.server.nil?
-  next if ignore_servers.include?(event.server.id)
-  bot.send_message("484262673777950721", "#{event.server.name}/##{event.channel.name} - #{event.channel.id}") unless event.channel.id == last_tracked_channel
-  last_tracked_channel = event.channel.id
 end
 
 bot.message(content: /#{quoted_prefix} (markov|remarkov|mmarkov).*/i) do |event|
@@ -400,6 +393,18 @@ bot.message(content: /#{quoted_prefix} wiki .+/i) do |event|
     event.respond(result[2][0] + "\n" + result[3][0])
   else
     event.respond("<a:shruggif:491014929910988820>")
+  end
+end
+
+bot.message(content: /rubi role .*/i) do |event|
+  roles = {"gorilla"=>"737773205141586012"}
+  role_id = roles[event.message.content.split.last]
+  next unless role_id && event.server.role(role_id)
+
+  if event.user.role?(role_id)
+    event.user.remove_role(role_id)
+  else
+    event.user.add_role(role_id)
   end
 end
 
