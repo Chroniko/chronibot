@@ -30,8 +30,16 @@ class Avtonet
     to_field("Letnik", year_text)
   end
 
-  def phone_number
-    to_field("Telefon", phone_number_text)
+  def engine
+    to_field("Motor", engine_text)
+  end
+
+  def fuel
+    to_field("Gorivo", fuel_text)
+  end
+
+  def gearbox
+    to_field("Menjalnik", gearbox_text)
   end
 
   def photo_url
@@ -41,26 +49,41 @@ class Avtonet
   private
 
   def title_text
-    doc.at_css("div.OglasDataTitle:nth-child(2) > h1").text.strip
+    doc.at_css(".container h3").text.strip
   end
 
   def price_text
-    doc.at_css(".OglasDataCenaTOP").text.strip
+    doc.at_css(".card-body p").text.strip
   end
 
   def odometer_text
-    doc.at_css(".DataZero2 div:last").text.strip
+    extract_content_from_row(".container table tr", /km:$/)
   end
 
   def year_text
-    doc.at_css("div.OglasData:nth-child(5) > div:nth-child(2)").text.strip
+    [
+      extract_content_from_row(".container table tr", /proizvodnje:$/),
+      extract_content_from_row(".container table tr", /registracija:$/i),
+      extract_content_from_row(".container table tr", /starost:$/i),
+    ].find("") { |result| !result.empty? }
   end
 
-  def phone_number_text
-    element = doc.at_css(".OglasMenuBoxPhone")
-    return "" unless element
-    element.text.strip
+  def engine_text
+    extract_content_from_row(".container table tr", /motor:$/i)
+      .gsub(/\s+/, " ")
   end
+
+  def fuel_text
+    extract_content_from_row(".container table tr", /gorivo:$/i)
+      .sub(/\s*motor\s*/, " ")
+  end
+
+  def gearbox_text
+    extract_content_from_row(".container table tr", /menjalnik:$/i)
+      .sub(/\s*menjalnik\s*/, " ")
+  end
+
+  private
 
   def to_field(name, value, inline: true)
     if value.empty?
@@ -68,5 +91,15 @@ class Avtonet
     end
 
     { name: name, value: value, inline: inline }
+  end
+
+  def extract_content_from_row(css, regex)
+    doc.css(css).each do |tr|
+      th = tr.at_css("th")
+      if th&.text =~ regex
+        return tr.at_css("td")&.text&.strip.to_s
+      end
+    end
+    ""
   end
 end
