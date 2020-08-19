@@ -451,7 +451,7 @@ bot.message(content: /#{quoted_prefix} giveaway ranking/i) do |event|
     entry = JSON.parse(redis.get("contestant_#{user_id}"))
     contestant_entries |= [entry]
   end
-  contestant_entries.sort_by! { |entry| entry["score"] }.reverse!
+  contestant_entries.sort_by! { |entry| [entry["score"], entry["response"] * -1] }.reverse!
   event.channel.send_embed do |embed|
     embed.title = "Giveaway purification ranking"
     contestant_entries.each_with_index do |contestant, i|
