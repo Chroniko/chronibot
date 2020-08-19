@@ -283,7 +283,7 @@ bot.message do |event|
   m = event.message.content
 
   # markov
-  unless m.downcase.start_with?("#{BOT_PREFIX} ", "!", "=", "&", "p!", ":", "$", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10 || event.server.id == ENV.fetch('REZIDENCA_ID').to_i
+  unless m.downcase.start_with?("#{BOT_PREFIX} ", "!", "=", "&", "p!", ":", "$", "<", "\\", "http") || /^[0-9]+$/.match?(m) || m.length < 10 || [ENV.fetch('REZIDENCA_ID'), ENV.fetch('VANGUARD_ID')].include?(event.server.id.to_s)
     chain << m
     redis.set("chain", chain.to_h.to_json)
     reverse_chain >> m
@@ -396,7 +396,7 @@ bot.message(content: /#{quoted_prefix} wiki .+/i) do |event|
   end
 end
 
-bot.message(content: /rubi role .*/i) do |event|
+bot.message(content: /#{quoted_prefix} role .*/i) do |event|
   roles = {"gorilla"=>"737773205141586012"}
   role_id = roles[event.message.content.split.last]
   next unless role_id && event.server.role(role_id)
@@ -405,6 +405,63 @@ bot.message(content: /rubi role .*/i) do |event|
     event.user.remove_role(role_id)
   else
     event.user.add_role(role_id)
+  end
+end
+
+# Pang's giveaway event
+bot.message do |event|
+  next unless event.channel.id.to_s == ENV.fetch("PANG_RANKING_CHANNEL")
+  next unless event.message.attachments.any?
+  contestant_id = event.message.author.id
+  response = event.respond("Reply with the score to confirm your entry or click on the reaction to this message to cancel.")
+  user_hash = {id: contestant_id, score: 0, image: event.message.attachments.first.url, response: response.id}
+  redis.set("contestant_#{contestant_id}", user_hash.to_json)
+  reaction = bot.emoji.select {|e| e.name == "akapissed"}.first.to_reaction
+  response.create_reaction(reaction)
+  #binding.pry
+end
+
+bot.reaction_add(emoji: "akapissed") do |event|
+  next unless event.channel.id.to_s == ENV.fetch("PANG_RANKING_CHANNEL")
+  entry = redis.get("contestant_#{event.user.id}")
+  next unless entry && JSON.parse(entry)["response"] == event.message.id
+  redis.set("contestant_#{event.user.id}", {})
+  contestant_list = redis.get("contestant_list").split(",")
+  contestant_list - [event.user.id.to_s]
+  redis.set("contestant_list", contestant_list.join(","))
+  event.respond("Entry has been cancelled.")
+end
+
+bot.message(content: /\d+/) do |event|
+  next unless event.channel.id.to_s == ENV.fetch("PANG_RANKING_CHANNEL")
+  next unless entry = redis.get("contestant_#{event.user.id}")
+  user_hash = JSON.parse(entry)
+  next unless user_hash["score"] == 0
+  user_hash["score"] = event.message.content.to_i
+  redis.set("contestant_#{event.user.id}", user_hash.to_json)
+  contestant_list = redis.get("contestant_list").split(",")
+  contestant_list |= [event.user.id.to_s]
+  redis.set("contestant_list", contestant_list.join(","))
+  event.respond("Entry has been successfully saved.")
+end
+
+bot.message(content: /#{quoted_prefix} giveaway ranking/i) do |event|
+  contestant_list = redis.get("contestant_list").split(",")
+  contestant_entries = []
+  contestant_list.each do |user_id|
+    entry = JSON.parse(redis.get("contestant_#{user_id}"))
+    contestant_entries.append(entry)
+  end
+  contestant_entries.sort! { |entry| entry["score"] }.reverse
+  event.channel.send_embed do |embed|
+    embed.title = "Giveaway purification ranking"
+    contestant_entries.each_with_index do |contestant, i|
+      embed.add_field(
+        name: "##{i+1}",
+        value: "#{bot.user(contestant["id"]).name}: [#{contestant["score"]}](#{contestant["image"]})",
+        inline: false
+      )
+    end
   end
 end
 
