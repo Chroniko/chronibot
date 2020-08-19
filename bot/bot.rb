@@ -418,7 +418,6 @@ bot.message do |event|
   redis.set("contestant_#{contestant_id}", user_hash.to_json)
   reaction = bot.emoji.select {|e| e.name == "akapissed"}.first.to_reaction
   response.create_reaction(reaction)
-  #binding.pry
 end
 
 bot.reaction_add(emoji: "akapissed") do |event|
@@ -427,7 +426,7 @@ bot.reaction_add(emoji: "akapissed") do |event|
   next unless entry && JSON.parse(entry)["response"] == event.message.id
   redis.set("contestant_#{event.user.id}", {})
   contestant_list = redis.get("contestant_list").split(",")
-  contestant_list - [event.user.id.to_s]
+  contestant_list -= [event.user.id.to_s]
   redis.set("contestant_list", contestant_list.join(","))
   event.respond("Entry has been cancelled.")
 end
@@ -452,7 +451,7 @@ bot.message(content: /#{quoted_prefix} giveaway ranking/i) do |event|
     entry = JSON.parse(redis.get("contestant_#{user_id}"))
     contestant_entries.append(entry)
   end
-  contestant_entries.sort! { |entry| entry["score"] }.reverse
+  contestant_entries.sort_by! { |entry| entry["score"] }.reverse!
   event.channel.send_embed do |embed|
     embed.title = "Giveaway purification ranking"
     contestant_entries.each_with_index do |contestant, i|
