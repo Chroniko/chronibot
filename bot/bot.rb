@@ -271,7 +271,9 @@ bot.message(content: %r{.*avto\.net/ads/details.*}i) do |event|
       embed.add_field(ad.year)
       embed.add_field(ad.odometer)
       embed.add_field(ad.price)
-      embed.add_field(ad.phone_number)
+      embed.add_field(ad.engine)
+      embed.add_field(ad.fuel)
+      embed.add_field(ad.gearbox)
       embed.image = Discordrb::Webhooks::EmbedImage.new(
         url: photo_uri
       )
